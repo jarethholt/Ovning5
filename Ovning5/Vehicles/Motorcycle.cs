@@ -2,6 +2,7 @@
 
 public class Motorcycle : Vehicle
 {
+    public override int NumberOfWheels { get; init; } = 2;
     public string Make { get; init; }
     public string Model { get; init; }
     public int Year { get; init; }
@@ -22,7 +23,6 @@ public class Motorcycle : Vehicle
     )
     {
         RegistrationNumber = registrationNumber;
-        NumberOfWheels = 2;
         Make = make;
         Model = model;
         Year = year;

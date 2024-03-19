@@ -21,7 +21,7 @@ public abstract class Vehicle
     /// <summary>
     /// The color of the vehicle.
     /// </summary>
-    public string Color { get; private set; } = "Unpainted";
+    public virtual string Color { get; protected set; } = "Unpainted";
 
     /// <summary>
     /// Paint the vehicle.

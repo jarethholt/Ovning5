@@ -4,6 +4,11 @@ public class Bus : Vehicle
 {
     public bool IsSingleCabin { get; init; }
 
+    public override int NumberOfWheels
+    {
+        get => IsSingleCabin ? 6 : 10;
+    }
+
     /// <summary>
     /// Create a new Bus.
     /// </summary>
@@ -18,7 +23,6 @@ public class Bus : Vehicle
     {
         RegistrationNumber = registrationNumber;
         IsSingleCabin = isSingleCabin;
-        NumberOfWheels = IsSingleCabin ? 6 : 10;
     }
 
     public override string ToString()

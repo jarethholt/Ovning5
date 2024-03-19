@@ -2,6 +2,7 @@
 
 public class Car : Vehicle
 {
+    public override int NumberOfWheels { get; init; } = 4;
     /// <summary>
     /// The make of the car, i.e. the manufacturer, e.g. "Toyota".
     /// </summary>
@@ -32,7 +33,6 @@ public class Car : Vehicle
     )
     {
         RegistrationNumber = registrationNumber;
-        NumberOfWheels = 4;
         Make = make;
         Model = model;
         Year = year;
