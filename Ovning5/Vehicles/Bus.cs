@@ -2,23 +2,28 @@
 
 public class Bus : Vehicle
 {
+    public bool IsSingleCabin { get; init; }
+
     /// <summary>
     /// Create a new Bus.
     /// </summary>
     /// <param name="registrationNumber">
     /// Registration number of the bus.
     /// </param>
-    /// <param name="numberOfWheels">
-    /// Number of wheels on the bus; usually 6 for a standard (single-
-    /// cabin) bus and 10 for a long (double-cabin).
+    /// <param name="isSingleCabin">
+    /// Whether the bus is single- or double-cabin. Single-cabin buses
+    /// have 6 wheels; double-cabin buses have 10.
     /// </param>
-    /// <param name="color">
-    /// Color of the bus, or <c>null</c> to leave unpainted.
-    /// </param>
-    public Bus(int registrationNumber, int numberOfWheels, string? color)
+    public Bus(int registrationNumber, bool isSingleCabin)
     {
         RegistrationNumber = registrationNumber;
-        NumberOfWheels = numberOfWheels;
-        PaintColor(color);
+        IsSingleCabin = isSingleCabin;
+        NumberOfWheels = IsSingleCabin ? 6 : 10;
+    }
+
+    public override string ToString()
+    {
+        string cabins = IsSingleCabin ? "single-cabin" : "double-cabin";
+        return $"{Color} {cabins} bus";
     }
 }

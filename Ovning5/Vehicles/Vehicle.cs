@@ -21,23 +21,17 @@ public abstract class Vehicle
     /// <summary>
     /// The color of the vehicle.
     /// </summary>
-    /// <remarks>
-    /// A null value is used to represent a new, unpainted vehicle.
-    /// Once painted, the value of Color should never again be null.
-    /// This is why <see cref="PaintColor(string)"/> only takes non-
-    /// null values.
-    /// </remarks>
-    public string? Color { get; private set; }
+    public string Color { get; private set; } = "Unpainted";
 
     /// <summary>
     /// Paint the vehicle.
     /// </summary>
-    /// <param name="color">
-    /// The color to paint the vehicle, or <c>null</c> to leave as-is.
-    /// </param>
-    public void PaintColor(string? color)
-    {
-        if (color is not null)
-            Color = color;
-    }
+    /// <param name="color">The color to paint the vehicle.</param>
+    public void PaintColor(string color) => Color = color;
+
+    /// <summary>
+    /// Abstract requiring a custom override of ToString for subclasses.
+    /// </summary>
+    /// <returns>A string description.</returns>
+    public abstract override string ToString();
 }
