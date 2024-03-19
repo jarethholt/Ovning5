@@ -28,7 +28,7 @@ public readonly struct RegistrationCodeHelper
         => isAlpha ? GenerateLetter(random) : GenerateNumber(random);
 }
 
-public readonly struct RegistrationCode
+public readonly struct RegistrationCode : IEquatable<RegistrationCode>
 {
     private static readonly bool[] _charIsAlpha
         = [true, true, true, false, false, false];
@@ -105,6 +105,23 @@ public readonly struct RegistrationCode
     }
 
     public override string ToString() => Code;
+
+    public bool Equals(RegistrationCode other) => this.Code == other.Code;
+
+    public override bool Equals(object? obj)
+        => obj is RegistrationCode other && Equals(other);
+
+    public override int GetHashCode() => this.Code.GetHashCode();
+
+    public static bool operator ==(RegistrationCode left, RegistrationCode right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(RegistrationCode left, RegistrationCode right)
+    {
+        return !(left == right);
+    }
 
     public static RegistrationCode GenerateCode(Random random)
     {
