@@ -9,7 +9,7 @@ internal class Program
         // Describe a few example vehicles
         Vehicle[] vehicles =
         [
-            new Car(1, "Toyota", "Corolla", 2002),
+            new Car(1, "Toyota", "Corolla", 2002, 1000),
             new Motorcycle(2, "Kawasaki", "Ninja ZX", 2024, "Sportbike"),
             new Bus(3, true),
         ];

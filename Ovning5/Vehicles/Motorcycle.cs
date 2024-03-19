@@ -8,12 +8,6 @@ public class Motorcycle : Vehicle
     public int Year { get; init; }
     public string MotorcycleType { get; init; }
 
-    /// <summary>
-    /// Create a new Motorcycle.
-    /// </summary>
-    /// <param name="registrationNumber">
-    /// The registration number of the motorcycle.
-    /// </param>
     public Motorcycle(
         int registrationNumber,
         string make,
