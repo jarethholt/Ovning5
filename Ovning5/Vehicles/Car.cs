@@ -15,6 +15,7 @@ public class Car : Vehicle
     /// The year the car was manufactured.
     /// </summary>
     public int Year { get; init; }
+    public int EngineCapacityInCC { get; init; }
 
     /// <summary>
     /// Create a new Car.
@@ -29,13 +30,15 @@ public class Car : Vehicle
         int registrationNumber,
         string make,
         string model,
-        int year
+        int year,
+        int engineCapacityInCC
     )
     {
         RegistrationNumber = registrationNumber;
         Make = make;
         Model = model;
         Year = year;
+        EngineCapacityInCC = engineCapacityInCC;
     }
 
     public override string ToString() => $"{Color} {Year} {Make} {Model} car";
