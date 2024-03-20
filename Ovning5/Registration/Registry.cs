@@ -26,7 +26,7 @@ public class Registry
     public bool Remove(RegistrationCode registrationCode)
         => _registrationCodes.Remove(registrationCode);
 
-    public RegistrationCode GenerateNewRegistrationCode(Random random)
+    public RegistrationCode GenerateAndAddNewCode(Random random)
     {
         RegistrationCode registrationCode;
         bool isNew;
@@ -35,6 +35,8 @@ public class Registry
             registrationCode = RegistrationCode.GenerateCode(random);
             isNew = Contains(registrationCode);
         } while (!isNew);
+
+        _registrationCodes.Add(registrationCode);
         return registrationCode;
     }
 }
