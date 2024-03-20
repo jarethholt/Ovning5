@@ -18,4 +18,24 @@ public class RegistrationCodeTests
             Assert.Equal(_codes[i], actual[i].ToString());
         }
     }
+
+    [Fact]
+    public void RegistrationCode_ValidInput_OK()
+    {
+        Exception? exception = Record.Exception(
+            () => _ = new RegistrationCode("ABC123")
+        );
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void RegistrationCode_InvalidInput_ThrowsException()
+    {
+        string[] codes = ["ABC12", "XYZ0987", "", "ABc123"];
+        foreach (string code in codes)
+        {
+            void test() => _ = new RegistrationCode(code);
+            Assert.Throws<FormatException>(test);
+        }
+    }
 }
