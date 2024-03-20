@@ -2,7 +2,7 @@
 
 public class Bus : Vehicle
 {
-    public bool IsSingleCabin { get; init; }
+    public bool IsSingleCabin { get; }
     public override int NumberOfWheels
     {
         get => IsSingleCabin ? 6 : 10;

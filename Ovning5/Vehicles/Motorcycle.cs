@@ -2,11 +2,11 @@
 
 public class Motorcycle : Vehicle
 {
-    public override int NumberOfWheels { get; init; } = 2;
-    public string Make { get; init; }
-    public string Model { get; init; }
-    public int Year { get; init; }
-    public string MotorcycleType { get; init; }
+    public override int NumberOfWheels { get; } = 2;
+    public string Make { get; }
+    public string Model { get; }
+    public int Year { get; }
+    public string MotorcycleType { get; }
 
     public Motorcycle(
         int registrationNumber,

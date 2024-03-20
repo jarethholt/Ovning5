@@ -3,10 +3,10 @@
 public class Airplane : Vehicle
 {
     public override string Color { get; protected set; } = "White";
-    public string Make { get; init; }
-    public string Model { get; init; }
-    public string AirplaneType { get; init; }
-    public int PassengerCapacity { get; init; }
+    public string Make { get; }
+    public string Model { get; }
+    public string AirplaneType { get; }
+    public int PassengerCapacity { get; }
 
     public Airplane(
         int registrationNumber,

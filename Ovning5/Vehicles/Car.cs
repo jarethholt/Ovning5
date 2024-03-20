@@ -2,11 +2,11 @@
 
 public class Car : Vehicle
 {
-    public override int NumberOfWheels { get; init; } = 4;
-    public string Make { get; init; }
-    public string Model { get; init; }
-    public int Year { get; init; }
-    public int EngineCapacityInCC { get; init; }
+    public override int NumberOfWheels { get; } = 4;
+    public string Make { get; }
+    public string Model { get; }
+    public int Year { get; }
+    public int EngineCapacityInCC { get; }
 
     public Car(
         int registrationNumber,
