@@ -1,11 +1,22 @@
-﻿namespace Ovning5.Registration;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
+namespace Ovning5.Registration;
+
+[JsonObjectCreationHandling(JsonObjectCreationHandling.Populate)]
 public class Registry
 {
-    private readonly HashSet<RegistrationCode> _registrationCodes = [];
+    private static readonly JsonSerializerOptions _jsonOptions
+        = new() { WriteIndented = true };
+    public HashSet<RegistrationCode> RegistrationCodes { get; init; }
+
+    public Registry() => RegistrationCodes = [];
+
+    public Registry(IEnumerable<RegistrationCode> registrationCodes)
+        => RegistrationCodes = new(registrationCodes);
 
     public bool Contains(RegistrationCode registrationCode)
-        => _registrationCodes.Contains(registrationCode);
+        => RegistrationCodes.Contains(registrationCode);
 
     public bool Contains(string code)
     {
@@ -21,10 +32,10 @@ public class Registry
     }
 
     public bool Add(RegistrationCode registrationCode)
-        => _registrationCodes.Add(registrationCode);
+        => RegistrationCodes.Add(registrationCode);
 
     public bool Remove(RegistrationCode registrationCode)
-        => _registrationCodes.Remove(registrationCode);
+        => RegistrationCodes.Remove(registrationCode);
 
     public RegistrationCode GenerateAndAddNewCode(Random random)
     {
@@ -36,7 +47,13 @@ public class Registry
             isNew = Contains(registrationCode);
         } while (!isNew);
 
-        _registrationCodes.Add(registrationCode);
+        RegistrationCodes.Add(registrationCode);
         return registrationCode;
     }
+
+    public string Serialize()
+        => JsonSerializer.Serialize(RegistrationCodes, _jsonOptions);
+
+    public static Registry? Deserialize(string registryAsJson)
+        => JsonSerializer.Deserialize<Registry>(registryAsJson);
 }

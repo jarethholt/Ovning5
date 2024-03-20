@@ -4,10 +4,8 @@ public readonly struct RegistrationCodeHelper
 {
     public const int LetterRangeStart = 65;
     public const int LetterRangeStop = 91;
-    public const int LetterRangeSize = 26;
     public const int NumberRangeStart = 48;
     public const int NumberRangeStop = 58;
-    public const int NumberRangeSize = 10;
 
     public static bool IsInNumberRange(int value)
         => NumberRangeStart <= value && value < NumberRangeStop;
@@ -59,7 +57,7 @@ public readonly struct RegistrationCode : IEquatable<RegistrationCode>
     {
         if (!RegistrationCodeHelper.MatchesFormat(code, _isAlpha))
             throw new FormatException(_formatErrorMessage);
-        this.Code = code;
+        Code = code;
     }
 
     public override string ToString() => Code;
