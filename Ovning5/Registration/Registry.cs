@@ -3,11 +3,8 @@ using System.Text.Json.Serialization;
 
 namespace Ovning5.Registration;
 
-[JsonObjectCreationHandling(JsonObjectCreationHandling.Populate)]
 public class Registry
 {
-    private static readonly JsonSerializerOptions _jsonOptions
-        = new() { WriteIndented = true };
     public HashSet<RegistrationCode> RegistrationCodes { get; init; }
 
     public Registry() => RegistrationCodes = [];
@@ -51,9 +48,11 @@ public class Registry
         return registrationCode;
     }
 
-    public string Serialize()
-        => JsonSerializer.Serialize(RegistrationCodes, _jsonOptions);
+    public string Serialize() => JsonSerializer.Serialize(RegistrationCodes.ToList());
 
-    public static Registry? Deserialize(string registryAsJson)
-        => JsonSerializer.Deserialize<Registry>(registryAsJson);
+    public static Registry Deserialize(string jsonString)
+    {
+        var codes = JsonSerializer.Deserialize<List<RegistrationCode>>(jsonString);
+        return codes is null ? new Registry() : new Registry(codes);
+    }
 }

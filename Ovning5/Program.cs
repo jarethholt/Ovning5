@@ -69,10 +69,8 @@ internal class Program
         Console.WriteLine("Attempt to deserialize this JSON:");
         try
         {
-            Registry? test = Registry.Deserialize(registryAsJson);
-            if (test is null)
-                Console.WriteLine("Deserialization succeeded but returned null.");
-            else if (!registry.RegistrationCodes.SetEquals(test.RegistrationCodes))
+            Registry test = Registry.Deserialize(registryAsJson);
+            if (!registry.RegistrationCodes.SetEquals(test.RegistrationCodes))
                 Console.WriteLine("Deserialization succeeded but produced the wrong registry.");
             else
                 Console.WriteLine("Deserialization succeeded and produced the correct registry!");
