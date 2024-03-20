@@ -8,7 +8,7 @@ public class RegistrationCodeTests
     private static readonly string[] _codes = ["BBU578", "ETG523", "FAD718"];
 
     [Fact]
-    public void GenerateCode_Seeded_Matches()
+    public void GenerateCode_Seeded_Equals()
     {
         Random random = new(_seed);
         RegistrationCode[] actual = new RegistrationCode[_codes.Length];
