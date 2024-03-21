@@ -3,15 +3,16 @@ using System.Collections;
 
 namespace Ovning5.VehicleCollections;
 
-internal class Garage<T> : IEnumerable<T> where T : Vehicle
+internal class Garage<T> : IEnumerable<T?> where T : Vehicle
 {
-    private readonly T[] _vehicles;
+    private readonly T?[] _vehicles;
     public int MaxCapacity { get; }
-    public IEnumerable<T> Vehicles
+    public IEnumerable<T?> Vehicles
     {
         get => _vehicles.Where(vehicle => vehicle is not null);
     }
     public int Count => Vehicles.Count();
+    public bool HasSpace => _vehicles.Any(vehicle => vehicle is null);
 
     public Garage(int maxCapacity)
     {
@@ -20,7 +21,8 @@ internal class Garage<T> : IEnumerable<T> where T : Vehicle
                 message: "A garage's capacity must be > 0",
                 paramName: nameof(maxCapacity));
         MaxCapacity = maxCapacity;
-        _vehicles = new T[MaxCapacity];
+        _vehicles = new T?[MaxCapacity];
+        Array.Fill(_vehicles, null);
     }
 
     public Garage(int maxCapacity, IEnumerable<T> vehicles)
@@ -33,12 +35,31 @@ internal class Garage<T> : IEnumerable<T> where T : Vehicle
                 paramName: nameof(vehicles));
 
         MaxCapacity = maxCapacity;
-        _vehicles = new T[MaxCapacity];
+        _vehicles = new T?[MaxCapacity];
+        Array.Fill(_vehicles, null);
         Array.Copy(vehicles.ToArray(), _vehicles, numVehicles);
     }
 
-    public IEnumerator<T> GetEnumerator()
-        => (IEnumerator<T>)_vehicles.GetEnumerator();
+    public bool TryAdd(T vehicle)
+    {
+        if (!HasSpace)
+            return false;
+        int index = Array.FindIndex(_vehicles, vehicle => vehicle is null);
+        _vehicles[index] = vehicle;
+        return true;
+    }
+
+    public bool Remove(T vehicle)
+    {
+        int index = Array.FindIndex(_vehicles, vehicle.Equals);
+        if (index == -1)
+            return false;
+        _vehicles[index] = null;
+        return true;
+    }
+
+    public IEnumerator<T?> GetEnumerator()
+        => (IEnumerator<T?>)_vehicles.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
