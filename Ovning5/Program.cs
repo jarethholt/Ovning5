@@ -120,7 +120,9 @@ internal class Program
         Console.WriteLine("Available methods:");
         foreach (var method in methods)
         {
-            if (method.Name.StartsWith("get_") || method.Name.StartsWith("set_"))
+            if (method.Name.StartsWith("get_")
+                || method.Name.StartsWith("set_")
+                || method.Name.StartsWith("op_"))
                 continue;
             List<string> args = [];
             foreach (var param in method.GetParameters())
