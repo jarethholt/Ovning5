@@ -1,4 +1,8 @@
-﻿namespace Ovning5.Registry;
+﻿using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Ovning5.Tests")]
+
+namespace Ovning5.Registry;
 
 internal readonly struct VehicleIDHelper
 {

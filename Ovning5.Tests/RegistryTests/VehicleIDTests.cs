@@ -1,14 +1,14 @@
-﻿using Ovning5.VehicleRegistry;
+﻿using Ovning5.Registry;
 
-namespace Ovning5.Tests.RegistrationTests;
+namespace Ovning5.Tests.RegistryTests;
 
-public class RegistrationCodeTests
+public class VehicleIDTests
 {
     private const int _seed = 12345;
     private static readonly string[] _codes = ["BBU578", "ETG523", "FAD718"];
 
     [Fact]
-    public void GenerateCode_Seeded_Equals()
+    public void GenerateID_Seeded_Equals()
     {
         Random random = new(_seed);
         VehicleID[] actual = new VehicleID[_codes.Length];
@@ -20,7 +20,7 @@ public class RegistrationCodeTests
     }
 
     [Fact]
-    public void RegistrationCode_ValidInput_OK()
+    public void VehicleID_ValidInput_OK()
     {
         Exception? exception = Record.Exception(
             () => _ = new VehicleID("ABC123")
@@ -29,7 +29,7 @@ public class RegistrationCodeTests
     }
 
     [Fact]
-    public void RegistrationCode_InvalidInput_ThrowsException()
+    public void VehicleID_InvalidInput_ThrowsFormatException()
     {
         string[] codes = ["ABC12", "XYZ0987", "", "ABc123"];
         foreach (string code in codes)

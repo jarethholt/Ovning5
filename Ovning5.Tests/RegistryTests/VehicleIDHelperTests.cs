@@ -1,8 +1,8 @@
-﻿using Ovning5.VehicleRegistry;
+﻿using Ovning5.Registry;
 
-namespace Ovning5.Tests.RegistrationTests;
+namespace Ovning5.Tests.RegistryTests;
 
-public class RegistrationCodeHelperTests
+public class VehicleIDHelperTests
 {
     private static readonly int _seed = 12345;
     private static readonly string _letters = "BBUNUVETGN";
