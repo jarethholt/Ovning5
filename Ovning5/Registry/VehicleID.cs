@@ -66,6 +66,8 @@ public readonly record struct VehicleID
 
     public override string ToString() => Code;
 
+    public bool Equals(string code) => Code == code;
+
     public static VehicleID GenerateID(Random random)
     {
         char[] codeAsChars = new char[CodeLength];

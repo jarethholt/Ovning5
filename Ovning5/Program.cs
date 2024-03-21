@@ -6,6 +6,15 @@ namespace Ovning5;
 
 internal class Program
 {
+    static Vehicle[] _vehicles =
+    [
+        new Car(new VehicleID("ABC123"), "Beige", "Toyota", "Corolla", 2002, 1000),
+        new Motorcycle(new VehicleID("DEF456"), "Black", "Kawasaki", "Ninja ZX", 2024, "Sportbike"),
+        new Bus(new VehicleID("GHI789"), "Red", true),
+        new Boat(new VehicleID("JKL012"), "White", 25, "Calculon's Pride"),
+        new Airplane(new VehicleID("MNO345"), "White", "Boeing", "747", "Passenger jet", 350),
+    ];
+
     static void Main()
     {
         VehicleExamples();
@@ -17,18 +26,8 @@ internal class Program
 
     static void VehicleExamples()
     {
-        // Describe a few example vehicles
-        Vehicle[] vehicles =
-        [
-            new Car(new VehicleID("ABC123"), "Beige", "Toyota", "Corolla", 2002, 1000),
-            new Motorcycle(new VehicleID("DEF456"), "Black", "Kawasaki", "Ninja ZX", 2024, "Sportbike"),
-            new Bus(new VehicleID("GHI789"), "Red", true),
-            new Boat(new VehicleID("JKL012"), "White", 25, "Calculon's Pride"),
-            new Airplane(new VehicleID("MNO345"), "White", "Boeing", "747", "Passenger jet", 350),
-        ];
-
         Console.WriteLine("Some example vehicles:");
-        foreach (Vehicle vehicle in vehicles)
+        foreach (var vehicle in _vehicles)
             Console.WriteLine(vehicle);
         Console.WriteLine("---");
         Console.WriteLine();
@@ -36,26 +35,27 @@ internal class Program
 
     private static void GarageExample()
     {
-        Vehicle[] vehicles =
-        [
-            new Car(new VehicleID("ABC123"), "Beige", "Toyota", "Corolla", 2002, 1000),
-            new Motorcycle(new VehicleID("DEF456"), "Black", "Kawasaki", "Ninja ZX", 2024, "Sportbike"),
-            new Bus(new VehicleID("GHI789"), "Red", true),
-            new Boat(new VehicleID("JKL012"), "White", 25, "Calculon's Pride"),
-            new Airplane(new VehicleID("MNO345"), "White", "Boeing", "747", "Passenger jet", 350),
-        ];
         Garage<Vehicle> garage = new(4);
 
-        for (int i = 0; i < vehicles.Length; i++)
+        for (int i = 0; i < _vehicles.Length; i++)
         {
-            var vehicle = vehicles[i];
+            var vehicle = _vehicles[i];
             bool success = garage.TryAdd(vehicle);
             if (!success)
                 Console.WriteLine(
                     $"Could not add vehicle #{i + 1} to the garage; "
                     + $"its capacity is {garage.MaxCapacity}");
+        }
+        Console.WriteLine(garage.ListAll());
+
+        string[] vehicleIDs = ["GHI789", "XXX000"];
+        foreach (var vehicleID in vehicleIDs)
+        {
+            Console.WriteLine($"Looking for vehicle {vehicleID} in the garage");
+            if (garage.FindByID(vehicleID, out Vehicle? vehicle))
+                Console.WriteLine($"  Found: {vehicle}");
             else
-                Console.WriteLine($"Added vehicle #{i + 1}: {vehicle}");
+                Console.WriteLine($"  Could not find {vehicleID}");
         }
 
         Console.WriteLine("---");
