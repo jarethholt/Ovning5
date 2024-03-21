@@ -1,27 +1,17 @@
-﻿namespace Ovning5.Vehicles;
+﻿using Ovning5.Registry;
 
-public class Car : Vehicle
+namespace Ovning5.Vehicles;
+
+public record Car(
+    VehicleID VehicleID,
+    string Color,
+    string Make,
+    string Model,
+    int Year,
+    int EngineCapacityInCC
+) : Vehicle(VehicleID, Color)
 {
     public override int NumberOfWheels { get; } = 4;
-    public string Make { get; }
-    public string Model { get; }
-    public int Year { get; }
-    public int EngineCapacityInCC { get; }
 
-    public Car(
-        int registrationNumber,
-        string make,
-        string model,
-        int year,
-        int engineCapacityInCC
-    )
-    {
-        RegistrationNumber = registrationNumber;
-        Make = make;
-        Model = model;
-        Year = year;
-        EngineCapacityInCC = engineCapacityInCC;
-    }
-
-    public override string ToString() => $"{Color} {Year} {Make} {Model} car";
+    // public override string ToString() => $"{Color} {Year} {Make} {Model} car";
 }

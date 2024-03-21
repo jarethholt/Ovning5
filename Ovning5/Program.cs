@@ -1,6 +1,5 @@
-﻿using Ovning5.VehicleRegistry;
+﻿using Ovning5.Registry;
 using Ovning5.Vehicles;
-using System.Reflection;
 using System.Text.Json;
 
 namespace Ovning5;
@@ -11,7 +10,7 @@ internal class Program
     {
         VehicleExamples();
         VehicleIDExamples();
-        RegistryExample();
+        VehicleRegistryExample();
         ReflectionTest();
     }
 
@@ -20,14 +19,12 @@ internal class Program
         // Describe a few example vehicles
         Vehicle[] vehicles =
         [
-            new Car(1, "Toyota", "Corolla", 2002, 1000),
-            new Motorcycle(2, "Kawasaki", "Ninja ZX", 2024, "Sportbike"),
-            new Bus(3, true),
-            new Boat(4, 25),
-            new Airplane(5, "Boeing", "747", "Passenger jet", 350),
+            new Car(new VehicleID("ABC123"), "Beige", "Toyota", "Corolla", 2002, 1000),
+            new Motorcycle(new VehicleID("DEF456"), "Black", "Kawasaki", "Ninja ZX", 2024, "Sportbike"),
+            new Bus(new VehicleID("GHI789"), "Red", true),
+            new Boat(new VehicleID("JKL012"), "White", 25, "Calculon's Pride"),
+            new Airplane(new VehicleID("MNO345"), "White", "Boeing", "747", "Passenger jet", 350),
         ];
-        vehicles[0].PaintColor("Beige");
-        vehicles[2].PaintColor("Red");
 
         Console.WriteLine("Some example vehicles:");
         foreach (Vehicle vehicle in vehicles)
@@ -55,12 +52,25 @@ internal class Program
         Console.WriteLine();
     }
 
-    static void RegistryExample()
+    static void VehicleRegistryExample()
     {
-        string[] codes = ["ABC123", "XYZ098", "DEF567"];
-        VehicleID[] vehicleIDs
-            = codes.Select(code => new VehicleID(code)).ToArray();
-        Registry registry = new(vehicleIDs);
+        Random random = new(12345);
+        VehicleRegistry registry = new();
+
+        VehicleID vehicleID;
+        Vehicle vehicle;
+        vehicleID = registry.GenerateNewID(random);
+        vehicle = new Car(vehicleID, "Beige", "Toyota", "Corolla", 2002, 1000);
+        if (!registry.TryAdd(vehicle))
+            Console.WriteLine($"Could not add this vehicle: {vehicle}");
+        vehicleID = registry.GenerateNewID(random);
+        vehicle = new Motorcycle(vehicleID, "Black", "Kawasaki", "Ninja ZX", 2024, "Sportbike");
+        if (!registry.TryAdd(vehicle))
+            Console.WriteLine($"Could not add this vehicle: {vehicle}");
+        vehicleID = registry.GenerateNewID(random);
+        vehicle = new Bus(vehicleID, "Red", true);
+        if (!registry.TryAdd(vehicle))
+            Console.WriteLine($"Could not add this vehicle: {vehicle}");
 
         Console.WriteLine("Example of JSON-serialized vehicle registry:");
         string registryAsJson = registry.Serialize();
@@ -70,8 +80,8 @@ internal class Program
         Console.WriteLine("Attempt to deserialize this JSON:");
         try
         {
-            Registry test = Registry.Deserialize(registryAsJson);
-            if (!registry.VehicleIDs.SetEquals(test.VehicleIDs))
+            VehicleRegistry test = VehicleRegistry.Deserialize(registryAsJson);
+            if (!registry.Equals(test))
                 Console.WriteLine("Deserialization succeeded but produced the wrong registry.");
             else
                 Console.WriteLine("Deserialization succeeded and produced the correct registry!");

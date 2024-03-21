@@ -1,16 +1,10 @@
-﻿using Ovning5.VehicleRegistry;
+﻿using Ovning5.Registry;
 
 namespace Ovning5.Vehicles;
 
-public abstract record class Vehicle
+public abstract record Vehicle(VehicleID VehicleID, string Color)
 {
-    private readonly VehicleRegistry<Vehicle> _registry = null!;
-    private readonly VehicleID _vehicleID;
-    public VehicleID VehicleID
-    {
-        get => _vehicleID;
-        init => _vehicleID = _registry.GenerateNewID(new Random());
-    }
+    public readonly VehicleID VehicleID = VehicleID;
     public virtual int NumberOfWheels { get; }
-    public virtual string Color { get; } = "Unpainted";
+    public virtual string Color { get; init; } = Color;
 }

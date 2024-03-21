@@ -1,22 +1,17 @@
-﻿namespace Ovning5.Vehicles;
+﻿using Ovning5.Registry;
 
-public class Boat : Vehicle
+namespace Ovning5.Vehicles;
+
+public record Boat(
+    VehicleID VehicleID,
+    string Color,
+    int LengthInMeters,
+    string Name
+) : Vehicle(VehicleID, Color)
 {
     private const float _metersToFeet = 3.28084f;
-
     public override int NumberOfWheels { get; } = 0;
-    public override string Color { get; protected set; } = "White";
-    public int LengthInMeters { get; }
     public int LengthInFeet => (int)(LengthInMeters * _metersToFeet);
-    public string Name { get; private set; } = "(Unnamed)";
 
-    public Boat(int registrationNumber, int lengthInMeters)
-    {
-        RegistrationNumber = registrationNumber;
-        LengthInMeters = lengthInMeters;
-    }
-
-    public void ChristenBoat(string name) => Name = name;
-
-    public override string ToString() => $"{LengthInMeters}-m {Color} boat: {Name}";
+    //public override string ToString() => $"{LengthInMeters}-m {Color} boat: {Name}";
 }
