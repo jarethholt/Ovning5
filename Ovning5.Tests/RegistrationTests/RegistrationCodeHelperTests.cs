@@ -1,4 +1,4 @@
-﻿using Ovning5.Registration;
+﻿using Ovning5.VehicleRegistry;
 
 namespace Ovning5.Tests.RegistrationTests;
 
@@ -16,7 +16,7 @@ public class RegistrationCodeHelperTests
         Random random = new(_seed);
         char[] chars = new char[_letters.Length];
         for (int i = 0; i < chars.Length; i++)
-            chars[i] = RegistrationCodeHelper.GenerateLetter(random);
+            chars[i] = VehicleIDHelper.GenerateLetter(random);
         string expected = new(chars);
         Assert.Equal(expected, _letters);
     }
@@ -27,7 +27,7 @@ public class RegistrationCodeHelperTests
         Random random = new(_seed);
         char[] chars = new char[_numbers.Length];
         for (int i = 0; i < chars.Length; i++)
-            chars[i] = RegistrationCodeHelper.GenerateNumber(random);
+            chars[i] = VehicleIDHelper.GenerateNumber(random);
         string expected = new(chars);
         Assert.Equal(expected, _numbers);
     }
@@ -41,7 +41,7 @@ public class RegistrationCodeHelperTests
         for (int i = 0; i < _isAlpha.Length; i++)
         {
             expected[i] = _isAlpha[i] ? _letters[i] : _numbers[i];
-            actual[i] = RegistrationCodeHelper.GenerateCharacter(_isAlpha[i], random);
+            actual[i] = VehicleIDHelper.GenerateCharacter(_isAlpha[i], random);
         }
         Assert.Equal(new string(expected), new string(actual));
     }
@@ -51,7 +51,7 @@ public class RegistrationCodeHelperTests
     {
         string[] codes = ["ABC123", "XYZ098", "DEF782"];
         foreach (string code in codes)
-            Assert.True(RegistrationCodeHelper.MatchesFormat(code, _isAlpha));
+            Assert.True(VehicleIDHelper.MatchesFormat(code, _isAlpha));
     }
 
     [Fact]
@@ -59,18 +59,18 @@ public class RegistrationCodeHelperTests
     {
         string[] codes = ["ABC12", "XYZ0987", ""];
         foreach (string code in codes)
-            Assert.False(RegistrationCodeHelper.MatchesFormat(code, _isAlpha));
+            Assert.False(VehicleIDHelper.MatchesFormat(code, _isAlpha));
     }
 
     [Fact]
     public static void MatchesFormat_Lowercase_False()
     {
-        Assert.False(RegistrationCodeHelper.MatchesFormat("abc123", _isAlpha));
+        Assert.False(VehicleIDHelper.MatchesFormat("abc123", _isAlpha));
     }
 
     [Fact]
     public static void MatchesFormat_NonLatin_False()
     {
-        Assert.False(RegistrationCodeHelper.MatchesFormat("ÄÖÅ123", _isAlpha));
+        Assert.False(VehicleIDHelper.MatchesFormat("ÄÖÅ123", _isAlpha));
     }
 }

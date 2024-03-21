@@ -1,4 +1,4 @@
-﻿using Ovning5.Registration;
+﻿using Ovning5.VehicleRegistry;
 using Ovning5.Vehicles;
 using System.Reflection;
 using System.Text.Json;
@@ -10,7 +10,7 @@ internal class Program
     static void Main()
     {
         VehicleExamples();
-        RegistrationCodeExamples();
+        VehicleIDExamples();
         RegistryExample();
         ReflectionTest();
     }
@@ -36,32 +36,31 @@ internal class Program
         Console.WriteLine();
     }
 
-    static void RegistrationCodeExamples()
+    static void VehicleIDExamples()
     {
         Random random = new(12345);
-        RegistrationCode[] registrationCodes =
+        VehicleID[] vehicleIDs =
         [
-            RegistrationCode.GenerateCode(random),
-            RegistrationCode.GenerateCode(random),
-            RegistrationCode.GenerateCode(random),
-            new RegistrationCode("ABC123"),
-            new RegistrationCode("XYZ098"),
+            VehicleID.GenerateID(random),
+            VehicleID.GenerateID(random),
+            VehicleID.GenerateID(random),
+            new VehicleID("ABC123"),
+            new VehicleID("XYZ098"),
         ];
 
         Console.WriteLine("Some example registration codes:");
-        foreach (RegistrationCode registrationCode in registrationCodes)
-            Console.WriteLine(registrationCode);
+        foreach (VehicleID vehicleID in vehicleIDs)
+            Console.WriteLine(vehicleID);
         Console.WriteLine("---");
         Console.WriteLine();
     }
 
     static void RegistryExample()
     {
-        string[] codeStrings = ["ABC123", "XYZ098", "DEF567"];
-        RegistrationCode[] codes
-            = codeStrings.Select(codeString => new RegistrationCode(codeString))
-                         .ToArray();
-        Registry registry = new(codes);
+        string[] codes = ["ABC123", "XYZ098", "DEF567"];
+        VehicleID[] vehicleIDs
+            = codes.Select(code => new VehicleID(code)).ToArray();
+        Registry registry = new(vehicleIDs);
 
         Console.WriteLine("Example of JSON-serialized vehicle registry:");
         string registryAsJson = registry.Serialize();
@@ -72,7 +71,7 @@ internal class Program
         try
         {
             Registry test = Registry.Deserialize(registryAsJson);
-            if (!registry.RegistrationCodes.SetEquals(test.RegistrationCodes))
+            if (!registry.VehicleIDs.SetEquals(test.VehicleIDs))
                 Console.WriteLine("Deserialization succeeded but produced the wrong registry.");
             else
                 Console.WriteLine("Deserialization succeeded and produced the correct registry!");
