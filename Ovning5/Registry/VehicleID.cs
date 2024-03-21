@@ -1,4 +1,4 @@
-﻿namespace Ovning5.VehicleRegistry;
+﻿namespace Ovning5.Registry;
 
 internal readonly struct VehicleIDHelper
 {
