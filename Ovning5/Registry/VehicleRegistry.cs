@@ -1,10 +1,10 @@
 ﻿using Ovning5.Vehicles;
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
 
 namespace Ovning5.Registry;
 
-public class VehicleRegistry
+public class VehicleRegistry : IEnumerable<Vehicle>
 {
     private readonly Dictionary<VehicleID, Vehicle> _vehicles = [];
 
@@ -80,19 +80,6 @@ public class VehicleRegistry
         return vehicleID;
     }
 
-    public string Serialize()
-    {
-        Dictionary<string, Vehicle> temp = _vehicles.Select(kvp => new KeyValuePair<string, Vehicle>(kvp.Key.Code, kvp.Value)).ToDictionary();
-        return JsonSerializer.Serialize(temp);
-    }
-
-    public static VehicleRegistry Deserialize(string json)
-    {
-        var vehicles = JsonSerializer.Deserialize<Dictionary<string, Vehicle>>(json);
-        return vehicles is null ? new VehicleRegistry()
-                                : new VehicleRegistry(vehicles);
-    }
-
     public bool Equals(VehicleRegistry other)
     {
         if (this.Count != other.Count)
@@ -101,4 +88,9 @@ public class VehicleRegistry
             kvp => other.TryGetValue(kvp.Key, out var value)
                    && kvp.Value.Equals(value));
     }
+
+    public IEnumerator<Vehicle> GetEnumerator()
+        => _vehicles.Values.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

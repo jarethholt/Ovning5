@@ -72,24 +72,10 @@ internal class Program
         if (!registry.TryAdd(vehicle))
             Console.WriteLine($"Could not add this vehicle: {vehicle}");
 
-        Console.WriteLine("Example of JSON-serialized vehicle registry:");
-        string registryAsJson = registry.Serialize();
-        Console.WriteLine(registryAsJson);
-        Console.WriteLine();
-
-        Console.WriteLine("Attempt to deserialize this JSON:");
-        try
+        Console.WriteLine("Vehicles in the registry:");
+        foreach (Vehicle item in registry)
         {
-            VehicleRegistry test = VehicleRegistry.Deserialize(registryAsJson);
-            if (!registry.Equals(test))
-                Console.WriteLine("Deserialization succeeded but produced the wrong registry.");
-            else
-                Console.WriteLine("Deserialization succeeded and produced the correct registry!");
-        }
-        catch (JsonException ex)
-        {
-            Console.WriteLine("Deserialization failed and produced this error:");
-            Console.WriteLine(ex.Message);
+            Console.WriteLine($"  {item}");
         }
         
         Console.WriteLine("---");
