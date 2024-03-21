@@ -1,12 +1,16 @@
-﻿namespace Ovning5.Vehicles;
+﻿using Ovning5.VehicleRegistry;
 
-public abstract class Vehicle
+namespace Ovning5.Vehicles;
+
+public abstract record class Vehicle
 {
-    public int RegistrationNumber { get; protected set; }
+    private readonly VehicleRegistry<Vehicle> _registry = null!;
+    private readonly VehicleID _vehicleID;
+    public VehicleID VehicleID
+    {
+        get => _vehicleID;
+        init => _vehicleID = _registry.GenerateNewID(new Random());
+    }
     public virtual int NumberOfWheels { get; }
-    public virtual string Color { get; protected set; } = "Unpainted";
-
-    public void PaintColor(string color) => Color = color;
-
-    public abstract override string ToString();
+    public virtual string Color { get; } = "Unpainted";
 }
