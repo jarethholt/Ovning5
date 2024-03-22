@@ -8,15 +8,22 @@ public class VehicleBuilder
     private static readonly Type[] _vehicleTypes
         = _currModule.FindTypes(ConcreteVehicleFilter, null);
 
-    public static List<(string name, Type type)> GiveParameters(string vehicleTypeName)
+    public static string[] AvailableVehicles
     {
-        Type? vehicleType
-            = _vehicleTypes.FirstOrDefault(type => type.Name == vehicleTypeName)
-            ?? throw new ArgumentOutOfRangeException(
-                nameof(vehicleTypeName),
-                $"Could not find {vehicleTypeName} amont the known vehicle types: "
-                + $"{string.Join(", ", _vehicleTypes.Select(type => type.Name))}");
+        get => _vehicleTypes.Select(type => type.Name).ToArray();
+    }
 
+    public static Type GetVehicleType(string vehicleTypeName)
+    {
+        return _vehicleTypes.FirstOrDefault(type => type.Name == vehicleTypeName)
+               ?? throw new ArgumentOutOfRangeException(
+                   nameof(vehicleTypeName),
+                   $"Could not find {vehicleTypeName} amont the known vehicle types: "
+                   + $"{string.Join(", ", _vehicleTypes.Select(type => type.Name))}");
+    }
+
+    public static List<(string name, Type type)> GetConstructorParameters(Type vehicleType)
+    {
         var constructors = vehicleType.GetConstructors();
         if (constructors.Length != 1)
             throw new Exception(
@@ -24,7 +31,6 @@ public class VehicleBuilder
                 + $"got {constructors.Length}");
         var constructor = constructors[0];
         var parameters = constructor.GetParameters();
-
         return parameters.Select(param => (param.Name!, param.ParameterType)).ToList();
     }
 
