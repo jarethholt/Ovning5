@@ -2,7 +2,7 @@
 
 [assembly: InternalsVisibleTo("Ovning5.Tests")]
 
-namespace Ovning5.Registry;
+namespace Ovning5.Vehicles;
 
 internal readonly struct VehicleIDHelper
 {

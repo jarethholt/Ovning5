@@ -1,4 +1,4 @@
-﻿using Ovning5.Registry;
+﻿using Ovning5.Vehicles;
 
 namespace Ovning5.Tests.RegistryTests;
 

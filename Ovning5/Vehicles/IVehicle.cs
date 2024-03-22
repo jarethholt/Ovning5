@@ -1,9 +1,8 @@
-﻿using Ovning5.Registry;
+﻿namespace Ovning5.Vehicles;
 
-namespace Ovning5.Vehicles;
-
-internal interface IVehicle
+public interface IVehicle
 {
+    VehicleID VehicleID { get; }
     string Color { get; init; }
     int NumberOfWheels { get; }
 

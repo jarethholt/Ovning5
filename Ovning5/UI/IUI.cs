@@ -7,23 +7,25 @@ public class Options
 
 public interface IUI
 {
-    void Print();
+    void WriteLine();
 
-    void Print(string prompt);
+    void WriteLine(string prompt);
+
+    void Write(string prompt);
 
     string? ReadInput();
 
     void DisplayOptions(Options options)
     {
         int maxNameLength = options.Values.Select(value => value.name.Length).Max();
-        Print("Choose one of these options.");
+        WriteLine("Choose one of these options.");
 
         StringBuilder stringBuilder = new();
         string format = $"{{0}} : {{1,-{maxNameLength}}} : {{2}}";
         foreach (var kvp in options)
             stringBuilder.AppendLine(
                 string.Format(format, kvp.Key, kvp.Value.name, kvp.Value.description));
-        Print(stringBuilder.ToString());
-        Print();
+        WriteLine(stringBuilder.ToString());
+        WriteLine();
     }
 }

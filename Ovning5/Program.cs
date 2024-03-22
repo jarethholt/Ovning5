@@ -1,5 +1,4 @@
-﻿using Ovning5.Registry;
-using Ovning5.VehicleCollections;
+﻿using Ovning5.VehicleCollections;
 using Ovning5.Vehicles;
 
 namespace Ovning5;
@@ -20,8 +19,9 @@ internal class Program
         VehicleExamples();
         GarageExample();
         VehicleIDExamples();
-        VehicleRegistryExample();
         ReflectionTest();
+        VehicleBuilder.Test();
+        SelectParamsTest();
     }
 
     static void VehicleExamples()
@@ -81,36 +81,6 @@ internal class Program
         Console.WriteLine();
     }
 
-    static void VehicleRegistryExample()
-    {
-        Random random = new(12345);
-        VehicleRegistry registry = new();
-
-        VehicleID vehicleID;
-        Vehicle vehicle;
-        vehicleID = registry.GenerateNewID(random);
-        vehicle = new Car(vehicleID, "Beige", "Toyota", "Corolla", 2002, 1000);
-        if (!registry.TryAdd(vehicle))
-            Console.WriteLine($"Could not add this vehicle: {vehicle}");
-        vehicleID = registry.GenerateNewID(random);
-        vehicle = new Motorcycle(vehicleID, "Black", "Kawasaki", "Ninja ZX", 2024, "Sportbike");
-        if (!registry.TryAdd(vehicle))
-            Console.WriteLine($"Could not add this vehicle: {vehicle}");
-        vehicleID = registry.GenerateNewID(random);
-        vehicle = new Bus(vehicleID, "Red", true);
-        if (!registry.TryAdd(vehicle))
-            Console.WriteLine($"Could not add this vehicle: {vehicle}");
-
-        Console.WriteLine("Vehicles in the registry:");
-        foreach (Vehicle item in registry)
-        {
-            Console.WriteLine($"  {item}");
-        }
-        
-        Console.WriteLine("---");
-        Console.WriteLine();
-    }
-
     static void ReflectionTest()
     {
         Type type = typeof(Car);
@@ -160,6 +130,23 @@ internal class Program
             }
             string paramdesc = string.Join(", ", args);
             Console.WriteLine($"  {method.ReturnType.Name} {method.Name}({paramdesc})");
+        }
+
+        Console.WriteLine("---");
+        Console.WriteLine();
+    }
+
+    private static void SelectParamsTest()
+    {
+        string vehicleTypeName = "Airplane";
+        Console.WriteLine($"Examining constructor parameters for {vehicleTypeName}");
+        List<(string name, Type type)> paramList
+            = VehicleBuilder.GiveParameters(vehicleTypeName)
+            ?? throw new Exception($"Could not find {vehicleTypeName}");
+
+        foreach ((string name, Type type) in paramList)
+        {
+            Console.WriteLine($"  {type.Name} {name}");
         }
     }
 }

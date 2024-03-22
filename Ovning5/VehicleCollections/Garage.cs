@@ -1,12 +1,11 @@
-﻿using Ovning5.Registry;
-using Ovning5.Vehicles;
+﻿using Ovning5.Vehicles;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Ovning5.VehicleCollections;
 
-internal class Garage<T> : IGarage<T> where T : Vehicle
+internal class Garage<T> : IGarage<T> where T : class, IVehicle
 {
     private readonly T?[] _vehicles;
     public int MaxCapacity { get; }

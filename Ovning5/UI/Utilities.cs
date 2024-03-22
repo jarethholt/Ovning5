@@ -23,19 +23,19 @@ internal class Utilities(IUI ui)
         string? readResult;
         T result;
 
-        _ui.Print(prompt);
+        _ui.Write(prompt);
         do
         {
             readResult = _ui.ReadInput();
             if (string.IsNullOrWhiteSpace(readResult))
             {
-                _ui.Print("Cannot use an empty input. Try again.");
+                _ui.WriteLine("Cannot use an empty input. Try again.");
                 continue;
             }
 
             if (!tryParse(readResult, out result!))
             {
-                _ui.Print(string.Format(errorFormatter, readResult));
+                _ui.WriteLine(string.Format(errorFormatter, readResult));
                 continue;
             }
             break;

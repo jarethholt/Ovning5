@@ -1,6 +1,4 @@
-﻿using Ovning5.Registry;
-
-namespace Ovning5.Vehicles;
+﻿namespace Ovning5.Vehicles;
 
 internal record Boat(
     VehicleID VehicleID,
