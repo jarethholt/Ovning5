@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices.Marshalling;
 
 namespace Ovning5.UI;
 
@@ -82,5 +81,19 @@ internal class Utilities(IUI ui)
     {
         string errorFormatter = "Could not parse '{0}' as an integer. Try again.";
         return AskForBase<int>(prompt, int.TryParse, errorFormatter);
+    }
+
+    public Action AskForOption(string prompt, Options options)
+    {
+        bool tryParse(string readResult, out string key)
+        {
+            key = readResult;
+            return options.ContainsKey(key);
+        }
+        string keyList = string.Join(", ", options.Keys);
+        string errorFormatter
+            = $"Could not parse '{{0}}' as one of the valid options: {keyList}";
+        string key = AskForBase<string>(prompt, tryParse, errorFormatter);
+        return options[key].action;
     }
 }
