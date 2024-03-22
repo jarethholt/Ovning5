@@ -140,9 +140,9 @@ internal class Program
     {
         string vehicleTypeName = "Airplane";
         Console.WriteLine($"Examining constructor parameters for {vehicleTypeName}");
+        Type vehicleType = VehicleBuilder.GetVehicleType(vehicleTypeName);
         List<(string name, Type type)> paramList
-            = VehicleBuilder.GiveParameters(vehicleTypeName)
-            ?? throw new Exception($"Could not find {vehicleTypeName}");
+            = VehicleBuilder.GetConstructorParameters(vehicleType);
 
         foreach ((string name, Type type) in paramList)
         {

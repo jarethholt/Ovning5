@@ -18,7 +18,7 @@ public class VehicleBuilder
         return _vehicleTypes.FirstOrDefault(type => type.Name == vehicleTypeName)
                ?? throw new ArgumentOutOfRangeException(
                    nameof(vehicleTypeName),
-                   $"Could not find {vehicleTypeName} amont the known vehicle types: "
+                   $"Could not find {vehicleTypeName} among the known vehicle types: "
                    + $"{string.Join(", ", _vehicleTypes.Select(type => type.Name))}");
     }
 
