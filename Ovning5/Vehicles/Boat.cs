@@ -2,7 +2,7 @@
 
 namespace Ovning5.Vehicles;
 
-public record Boat(
+internal record Boat(
     VehicleID VehicleID,
     string Color,
     int LengthInMeters,

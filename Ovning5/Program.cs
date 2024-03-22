@@ -6,7 +6,7 @@ namespace Ovning5;
 
 internal class Program
 {
-    static Vehicle[] _vehicles =
+    static readonly Vehicle[] _vehicles =
     [
         new Car(new VehicleID("ABC123"), "Beige", "Toyota", "Corolla", 2002, 1000),
         new Motorcycle(new VehicleID("DEF456"), "Black", "Kawasaki", "Ninja ZX", 2024, "Sportbike"),

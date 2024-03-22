@@ -2,7 +2,7 @@
 
 namespace Ovning5.Vehicles;
 
-public record Motorcycle(
+internal record Motorcycle(
     VehicleID VehicleID,
     string Color,
     string Make,

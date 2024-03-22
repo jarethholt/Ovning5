@@ -2,7 +2,7 @@
 
 namespace Ovning5.Vehicles;
 
-public record Bus(
+internal record Bus(
     VehicleID VehicleID,
     string Color,
     bool IsSingleCabin
