@@ -6,7 +6,7 @@ namespace Ovning5.VehicleCollections;
 
 public class GarageHandler(int maxCapacity) : IGarage<Vehicle>
 {
-    private Garage<Vehicle> _garage = new(maxCapacity);
+    private readonly Garage<Vehicle> _garage = new(maxCapacity);
 
     public int Count => _garage.Count;
 
