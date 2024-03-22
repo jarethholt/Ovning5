@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Ovning5.VehicleCollections;
 
-internal class Garage<T> : IEnumerable<T?> where T : Vehicle
+internal class Garage<T> : IGarage<T> where T : Vehicle
 {
     private readonly T?[] _vehicles;
     public int MaxCapacity { get; }
@@ -82,9 +82,6 @@ internal class Garage<T> : IEnumerable<T?> where T : Vehicle
             return false;
         }
     }
-
-    public bool FindByID(VehicleID vehicleID, [MaybeNullWhen(false)] out T vehicle)
-        => FindByID(vehicleID.Code, out vehicle);
 
     public IEnumerator<T?> GetEnumerator()
         => (IEnumerator<T?>)_vehicles.GetEnumerator();
