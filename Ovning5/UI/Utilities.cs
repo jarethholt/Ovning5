@@ -1,41 +1,44 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Ovning5.Vehicles;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ovning5.UI;
 
 public delegate bool TryParse<T>(string input, [MaybeNullWhen(false)] out T result);
 
-internal class Utilities(IUI ui)
+public static class Utilities
 {
-    private readonly IUI _ui = ui;
-
-    public void Loop(Action action, string againPrompt)
+    public static void Loop(Action action, string againPrompt, IUI ui)
     {
         bool again;
         do
         {
             action();
-            again = AskForYesNo(againPrompt);
+            again = AskForYesNo(againPrompt, ui);
         } while (again);
     }
 
-    public T AskForBase<T>(string prompt, TryParse<T> tryParse, string errorFormatter)
+    public static T AskForBase<T>(
+        string prompt,
+        TryParse<T> tryParse,
+        string errorFormatter,
+        IUI ui)
     {
         string? readResult;
         T result;
 
-        _ui.Write(prompt);
+        ui.Write(prompt);
         do
         {
-            readResult = _ui.ReadInput();
+            readResult = ui.ReadInput();
             if (string.IsNullOrWhiteSpace(readResult))
             {
-                _ui.WriteLine("Cannot use an empty input. Try again.");
+                ui.WriteLine("Cannot use an empty input. Try again.");
                 continue;
             }
 
             if (!tryParse(readResult, out result!))
             {
-                _ui.WriteLine(string.Format(errorFormatter, readResult));
+                ui.WriteLine(string.Format(errorFormatter, readResult));
                 continue;
             }
             break;
@@ -43,7 +46,7 @@ internal class Utilities(IUI ui)
         return result;
     }
 
-    public bool AskForYesNo(string prompt)
+    public static bool AskForYesNo(string prompt, IUI ui)
     {
         static bool tryParse(string readResult, out bool result)
         {
@@ -63,10 +66,10 @@ internal class Utilities(IUI ui)
             return success;
         }
         string errorFormatter = "Could not parse '{0}' as [y]es or [n]o. Try again.";
-        return AskForBase<bool>(prompt, tryParse, errorFormatter);
+        return AskForBase<bool>(prompt, tryParse, errorFormatter, ui);
     }
 
-    public string AskForString(string prompt)
+    public static string AskForString(string prompt, IUI ui)
     {
         static bool tryParse(string readResult, out string result)
         {
@@ -74,16 +77,47 @@ internal class Utilities(IUI ui)
             return true;
         }
         string errorFormatter = "";
-        return AskForBase<string>(prompt, tryParse, errorFormatter);
+        return AskForBase<string>(prompt, tryParse, errorFormatter, ui);
     }
 
-    public int AskForInt(string prompt)
+    public static int AskForInt(string prompt, IUI ui)
     {
-        string errorFormatter = "Could not parse '{0}' as an integer. Try again.";
-        return AskForBase<int>(prompt, int.TryParse, errorFormatter);
+        string errorFormatter = $"Could not parse '{{0}}' as an integer. Try again.";
+        return AskForBase<int>(prompt, int.TryParse, errorFormatter, ui);
     }
 
-    public Action AskForOption(string prompt, Options options)
+    public static int AskForInt(string prompt, int low, IUI ui)
+    {
+        bool tryParse(string readResult, out int result)
+        {
+            bool success = int.TryParse(readResult, out result);
+            if (!success)
+                return success;
+            return (low <= result);
+        }
+        string errorFormatter
+            = $"Could not parse '{{0}}' as an integer greater than {low-1}. Try again.";
+        return AskForBase<int>(prompt, tryParse, errorFormatter, ui);
+    }
+
+    public static int AskForInt(string prompt, int low, int high, IUI ui)
+    {
+        bool tryParse(string readResult, out int result)
+        {
+            bool success = int.TryParse(readResult, out result);
+            if (!success)
+                return success;
+            return (low <= result && result <= high);
+        }
+        string errorFormatter
+            = $"Could not parse '{{0}}' as an integer between {low} and {high}. Try again.";
+        return AskForBase<int>(prompt, tryParse, errorFormatter, ui);
+    }
+
+    public static int AskForPositiveInt(string prompt, IUI ui)
+        => AskForInt(prompt, 1, ui);
+
+    public static Action AskForOption(string prompt, Options options, IUI ui)
     {
         bool tryParse(string readResult, out string key)
         {
@@ -93,7 +127,19 @@ internal class Utilities(IUI ui)
         string keyList = string.Join(", ", options.Keys);
         string errorFormatter
             = $"Could not parse '{{0}}' as one of the valid options: {keyList}";
-        string key = AskForBase<string>(prompt, tryParse, errorFormatter);
+        string key = AskForBase<string>(prompt, tryParse, errorFormatter, ui);
         return options[key].action;
+    }
+
+    public static VehicleID AskForVehicleID(string prompt, IUI ui)
+    {
+        static bool tryParse(string readResult, out string vehicleID)
+        {
+            vehicleID = readResult;
+            return VehicleID.Validate(vehicleID);
+        }
+        string errorFormatter
+            = $"The input '{{0}}' must be a string of the form {VehicleID.CodeFormat}";
+        return new VehicleID(AskForBase<string>(prompt, tryParse, errorFormatter, ui));
     }
 }

@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Ovning5.VehicleCollections;
 
-public interface IGarage<T> : IEnumerable<T?> where T : class, IVehicle
+internal interface IGarage<T> : IEnumerable<T?> where T : class, IVehicle
 {
     int Count { get; }
     bool HasSpace { get; }

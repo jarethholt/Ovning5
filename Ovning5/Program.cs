@@ -1,5 +1,7 @@
 ﻿using Ovning5.VehicleCollections;
 using Ovning5.Vehicles;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Ovning5;
 
@@ -16,19 +18,68 @@ internal class Program
 
     static void Main()
     {
+        VehicleIDExamples();
         VehicleExamples();
         GarageExample();
-        VehicleIDExamples();
         ReflectionTest();
-        VehicleBuilder.Test();
+        VehicleBuilder_orig.Test();
         SelectParamsTest();
+    }
+
+    static void VehicleIDExamples()
+    {
+        Random random = new(12345);
+        VehicleID[] vehicleIDs =
+        [
+            VehicleID.GenerateID(random),
+            VehicleID.GenerateID(random),
+            VehicleID.GenerateID(random),
+            new VehicleID("ABC123"),
+            new VehicleID("XYZ098"),
+        ];
+
+        Console.WriteLine("Some example registration codes:");
+        foreach (VehicleID vehicleID in vehicleIDs)
+        {
+            Console.WriteLine(vehicleID);
+            string vehicleIDAsJson = JsonSerializer.Serialize(vehicleID);
+            Console.WriteLine(vehicleIDAsJson);
+            try
+            {
+                VehicleID test = JsonSerializer.Deserialize<VehicleID>(vehicleIDAsJson);
+                if (vehicleID.Equals(test))
+                    Console.WriteLine("Deserialization succeeded and was correct!");
+                else
+                    Console.WriteLine($"Deserialization succeeded but was incorrect: {test}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Deserialization failed and produced the following: {ex.Message}");
+            }
+        }
+        Console.WriteLine("---");
+        Console.WriteLine();
     }
 
     static void VehicleExamples()
     {
         Console.WriteLine("Some example vehicles:");
         foreach (var vehicle in _vehicles)
+        {
+            Type vehicleType = vehicle.GetType();
             Console.WriteLine(vehicle);
+            string vehicleAsJson = JsonSerializer.Serialize(vehicle, vehicleType);
+            Console.WriteLine(vehicleAsJson);
+            object? result = JsonSerializer.Deserialize(vehicleAsJson, vehicleType);
+            var test = Convert.ChangeType(result, vehicleType);
+            if (!vehicle.Equals(test))
+            {
+                Console.WriteLine("Vehicle was not deserialized correctly...");
+                Console.WriteLine(test);
+            }
+            else
+                Console.WriteLine("Vehicle was deserialized correctly!");
+        }
         Console.WriteLine("---");
         Console.WriteLine();
     }
@@ -58,25 +109,6 @@ internal class Program
                 Console.WriteLine($"  Could not find {vehicleID}");
         }
 
-        Console.WriteLine("---");
-        Console.WriteLine();
-    }
-
-    static void VehicleIDExamples()
-    {
-        Random random = new(12345);
-        VehicleID[] vehicleIDs =
-        [
-            VehicleID.GenerateID(random),
-            VehicleID.GenerateID(random),
-            VehicleID.GenerateID(random),
-            new VehicleID("ABC123"),
-            new VehicleID("XYZ098"),
-        ];
-
-        Console.WriteLine("Some example registration codes:");
-        foreach (VehicleID vehicleID in vehicleIDs)
-            Console.WriteLine(vehicleID);
         Console.WriteLine("---");
         Console.WriteLine();
     }
@@ -140,9 +172,9 @@ internal class Program
     {
         string vehicleTypeName = "Airplane";
         Console.WriteLine($"Examining constructor parameters for {vehicleTypeName}");
-        Type vehicleType = VehicleBuilder.GetVehicleType(vehicleTypeName);
+        Type vehicleType = VehicleBuilder_orig.GetVehicleType(vehicleTypeName);
         List<(string name, Type type)> paramList
-            = VehicleBuilder.GetConstructorParameters(vehicleType);
+            = VehicleBuilder_orig.GetConstructorParameters(vehicleType);
 
         foreach ((string name, Type type) in paramList)
         {

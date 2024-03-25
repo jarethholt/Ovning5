@@ -1,6 +1,8 @@
-﻿namespace Ovning5.Vehicles;
+﻿using System.Text.Json;
 
-public interface IVehicle
+namespace Ovning5.Vehicles;
+
+internal interface IVehicle
 {
     VehicleID VehicleID { get; }
     string Color { get; init; }

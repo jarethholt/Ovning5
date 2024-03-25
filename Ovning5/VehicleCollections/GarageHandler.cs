@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Ovning5.VehicleCollections;
 
-public class GarageHandler(int maxCapacity) : IGarage<IVehicle>
+internal class GarageHandler(int maxCapacity) : IGarage<IVehicle>
 {
     private readonly Garage<IVehicle> _garage = new(maxCapacity);
 

@@ -1,4 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Ovning5.UI;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 [assembly: InternalsVisibleTo("Ovning5.Tests")]
 
@@ -45,7 +48,8 @@ internal readonly struct VehicleIDHelper
     }
 }
 
-public readonly record struct VehicleID
+[JsonConverter(typeof(VehicleIDJsonConverter))]
+internal readonly record struct VehicleID
 {
     private static readonly bool[] _isAlpha
         = [true, true, true, false, false, false];
@@ -59,7 +63,7 @@ public readonly record struct VehicleID
 
     public VehicleID(string code)
     {
-        if (!VehicleIDHelper.MatchesFormat(code, _isAlpha))
+        if (!Validate(code))
             throw new FormatException(_formatErrorMessage);
         Code = code;
     }
@@ -67,6 +71,9 @@ public readonly record struct VehicleID
     public override string ToString() => Code;
 
     public bool Equals(string code) => Code == code;
+
+    public static bool Validate(string code)
+        => VehicleIDHelper.MatchesFormat(code, _isAlpha);
 
     public static VehicleID GenerateID(Random random)
     {
@@ -76,4 +83,19 @@ public readonly record struct VehicleID
                 = VehicleIDHelper.GenerateCharacter(_isAlpha[i], random);
         return new VehicleID(new string(codeAsChars));
     }
+}
+
+internal class VehicleIDJsonConverter : JsonConverter<VehicleID>
+{
+    public override VehicleID Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    ) => new(reader.GetString()!);
+
+    public override void Write(
+        Utf8JsonWriter writer,
+        VehicleID value,
+        JsonSerializerOptions options
+    ) => writer.WriteStringValue(value.Code);
 }
