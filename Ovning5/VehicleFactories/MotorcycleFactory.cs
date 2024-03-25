@@ -1,8 +1,9 @@
 ﻿using Ovning5.Vehicles;
+using System.Text.Json;
 
 namespace Ovning5.VehicleFactories;
 
-internal class MotorcycleFactory : VehicleFactory<Motorcycle>
+internal class MotorcycleFactory : VehicleFactory, IVehicleFactory
 {
     protected override string VehicleTypeName => "Motorcycle";
     protected override (string name, Type type)[] Parameters =>
@@ -14,4 +15,11 @@ internal class MotorcycleFactory : VehicleFactory<Motorcycle>
         ("Year", typeof(int)),
         ("MotorcycleType", typeof(string))
     ];
+
+    public override IVehicle CreateVehicle(string json)
+        => JsonSerializer.Deserialize<Motorcycle>(json)
+        ?? throw new ArgumentException(
+            $"Could not deserialize this JSON as type {VehicleTypeName}: {json}");
+
+    public static new IVehicle Example() => Motorcycle.Example();
 }

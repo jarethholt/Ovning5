@@ -5,7 +5,7 @@ namespace Ovning5.VehicleFactories;
 
 internal class VehiclePlant
 {
-    private readonly Dictionary<string, IVehicleFactory> _vehicleFactories = new()
+    private readonly Dictionary<string, VehicleFactory> _vehicleFactories = new()
     {
         { "Airplane", new AirplaneFactory() },
         { "Boat", new BoatFactory() },
@@ -16,7 +16,12 @@ internal class VehiclePlant
 
     public IVehicleFactory ChooseVehicleFactory(IUI ui)
     {
-        ui.WriteLine($"The following vehicle types are available: {string.Join(", ", _vehicleFactories.Keys)}");
-        return Utilities.AskForDictValue("Please choose a vehicle: ", _vehicleFactories, ui);
+        ui.WriteLine(
+            "The following vehicle types are available: "
+            + $"{string.Join(", ", _vehicleFactories.Keys)}");
+        return Utilities.AskForDictValue(
+            "Please choose a vehicle: ",
+            _vehicleFactories,
+            ui);
     }
 }

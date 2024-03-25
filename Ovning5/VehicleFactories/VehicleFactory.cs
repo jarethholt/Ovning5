@@ -64,7 +64,7 @@ internal static class VehicleFactoryHelper
     }
 }
 
-internal abstract class VehicleFactory<T> : IVehicleFactory where T : class, IVehicle
+internal abstract class VehicleFactory : IVehicleFactory
 {
     protected abstract string VehicleTypeName { get; }
     protected abstract ParameterSpec Parameters { get; }
@@ -74,10 +74,7 @@ internal abstract class VehicleFactory<T> : IVehicleFactory where T : class, IVe
     public List<(string name, string value)> AskForParameters(IUI ui)
         => VehicleFactoryHelper.AskForParameters(VehicleTypeName, Parameters, ui);
 
-    public IVehicle CreateVehicle(string json)
-        => JsonSerializer.Deserialize<T>(json)
-        ?? throw new ArgumentException(
-            $"Could not deserialize this JSON as type {VehicleTypeName}: {json}");
+    public abstract IVehicle CreateVehicle(string json);
 
     public IVehicle BuildVehicle(IUI ui)
     {
@@ -85,4 +82,6 @@ internal abstract class VehicleFactory<T> : IVehicleFactory where T : class, IVe
         string json = VehicleFactoryHelper.CreateJsonString(parameterValues);
         return CreateVehicle(json);
     }
+
+    public static IVehicle Example() => throw new NotImplementedException();
 }

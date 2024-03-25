@@ -7,9 +7,12 @@ internal record Car(
     string Model,
     int Year,
     int EngineCapacityInCC
-) : Vehicle(VehicleID, Color)
+) : Vehicle(VehicleID, Color), IVehicle
 {
     public override int NumberOfWheels { get; } = 4;
+
+    public static new IVehicle Example()
+        => new Car(new VehicleID("ABC123"), "Beige", "Toyota", "Corolla", 2002, 1000);
 
     // public override string ToString() => $"{Color} {Year} {Make} {Model} car";
 }

@@ -1,8 +1,9 @@
 ﻿using Ovning5.Vehicles;
+using System.Text.Json;
 
 namespace Ovning5.VehicleFactories;
 
-internal class BusFactory : VehicleFactory<Bus>
+internal class BusFactory : VehicleFactory, IVehicleFactory
 {
     protected override string VehicleTypeName => "Bus";
     protected override (string name, Type type)[] Parameters =>
@@ -11,4 +12,11 @@ internal class BusFactory : VehicleFactory<Bus>
         ("Color", typeof(string)),
         ("IsSingleCabin", typeof(bool))
     ];
+
+    public override IVehicle CreateVehicle(string json)
+        => JsonSerializer.Deserialize<Bus>(json)
+        ?? throw new ArgumentException(
+            $"Could not deserialize this JSON as type {VehicleTypeName}: {json}");
+
+    public static new IVehicle Example() => Bus.Example();
 }

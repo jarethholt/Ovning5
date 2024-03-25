@@ -10,4 +10,5 @@ internal interface IVehicleFactory
     public ParameterSpec Parameters { get; }
     public IVehicle CreateVehicle(string json);
     public IVehicle BuildVehicle(IUI ui);
+    public static abstract IVehicle Example();
 }

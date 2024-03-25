@@ -8,11 +8,11 @@ internal class Program
 {
     static readonly Vehicle[] _vehicles =
     [
-        new Car(new VehicleID("ABC123"), "Beige", "Toyota", "Corolla", 2002, 1000),
-        new Motorcycle(new VehicleID("DEF456"), "Black", "Kawasaki", "Ninja ZX", 2024, "Sportbike"),
-        new Bus(new VehicleID("GHI789"), "Red", true),
-        new Boat(new VehicleID("JKL012"), "White", 25, "Calculon's Pride"),
-        new Airplane(new VehicleID("MNO345"), "White", "Boeing", "747", "Passenger jet", 350),
+        Car.Example(),
+        Motorcycle.Example(),
+        Bus.Example(),
+        Boat.Example(),
+        Airplane.Example(),
     ];
 
     static void Main()

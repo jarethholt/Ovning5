@@ -4,9 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Ovning5.VehicleCollections;
 
-internal class GarageHandler(int maxCapacity) : IGarage<IVehicle>
+internal class GarageHandler(int maxCapacity) : IGarage<Vehicle>
 {
-    private readonly Garage<IVehicle> _garage = new(maxCapacity);
+    private readonly Garage<Vehicle> _garage = new(maxCapacity);
 
     public int Count => _garage.Count;
 
@@ -14,18 +14,18 @@ internal class GarageHandler(int maxCapacity) : IGarage<IVehicle>
 
     public int MaxCapacity => _garage.MaxCapacity;
 
-    public bool FindByID(string vehicleID, [MaybeNullWhen(false)] out IVehicle vehicle)
+    public bool FindByID(string vehicleID, [MaybeNullWhen(false)] out Vehicle vehicle)
         => _garage.FindByID(vehicleID, out vehicle);
 
-    public IEnumerator<IVehicle?> GetEnumerator() => _garage.GetEnumerator();
+    public IEnumerator<Vehicle?> GetEnumerator() => _garage.GetEnumerator();
 
     public string ListAll() => _garage.ListAll();
 
-    public bool Remove(IVehicle vehicle) => _garage.Remove(vehicle);
+    public bool Remove(Vehicle vehicle) => _garage.Remove(vehicle);
 
     public bool RemoveByID(string vehicleID) => _garage.RemoveByID(vehicleID);
 
-    public bool TryAdd(IVehicle vehicle) => _garage.TryAdd(vehicle);
+    public bool TryAdd(Vehicle vehicle) => _garage.TryAdd(vehicle);
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
