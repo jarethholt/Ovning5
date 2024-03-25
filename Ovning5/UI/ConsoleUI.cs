@@ -1,6 +1,6 @@
 ﻿namespace Ovning5.UI;
 
-public class ConsoleUI : IUI
+internal class ConsoleUI : IUI
 {
     public void WriteLine() => Console.WriteLine();
     
@@ -9,4 +9,6 @@ public class ConsoleUI : IUI
     public void Write(string prompt) => Console.Write(prompt);
 
     public string? ReadInput() => Console.ReadLine();
+
+    public void Clear() => Console.Clear();
 }

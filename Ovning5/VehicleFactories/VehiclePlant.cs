@@ -14,12 +14,9 @@ internal class VehiclePlant
         { "Motorcycle", new MotorcycleFactory() },
     };
 
-    public IVehicle BuildVehicle(string vehicleTypeName, IUI ui)
+    public IVehicleFactory ChooseVehicleFactory(IUI ui)
     {
-        if (!_vehicleFactories.TryGetValue(vehicleTypeName, out var factory))
-            throw new ArgumentException(
-                $"Cannot get a VehicleFactory for type {vehicleTypeName}; "
-                + $"available vehicles are {string.Join(", ", _vehicleFactories.Keys)}");
-        return factory.BuildVehicle(ui);
+        ui.WriteLine($"The following vehicle types are available: {string.Join(", ", _vehicleFactories.Keys)}");
+        return Utilities.AskForDictValue("Please choose a vehicle: ", _vehicleFactories, ui);
     }
 }

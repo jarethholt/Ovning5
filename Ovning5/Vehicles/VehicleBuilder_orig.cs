@@ -1,11 +1,10 @@
 ﻿using Ovning5.UI;
 using System.Reflection;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Ovning5.Vehicles;
 
-public static class VehicleBuilder_orig
+internal static class VehicleBuilder_orig
 {
     private static readonly Module _currModule = typeof(VehicleBuilder_orig).Module;
     private static readonly Type[] _vehicleTypes
@@ -14,20 +13,6 @@ public static class VehicleBuilder_orig
         = _vehicleTypes.Select(type => type.Name).ToArray();
 
     public static string[] AvailableVehicles { get => _vehicleTypeNames; }
-
-    public static IVehicle ConstructVehicle(IUI ui)
-    {
-        Type vehicleType = AskForVehicleType(ui);
-        List<(string name, string value)> args
-            = AskForConstructorParameters(vehicleType, ui);
-        string vehicleAsJson = CreateJsonString(args);
-
-        MethodInfo method = _currModule.GetMethod("JsonSerializer.Deserialize")
-            ?? throw new Exception("Could not find the function 'JsonSerializer.Deserialize'");
-        method = method.MakeGenericMethod(vehicleType);
-        var result = method.Invoke(null, [vehicleAsJson]);
-        var test = (typeof(vehicleType))result;
-    }
 
     public static Type AskForVehicleType(IUI ui)
     {
@@ -53,8 +38,8 @@ public static class VehicleBuilder_orig
             if (type.Equals(typeof(VehicleID)))
             {
                 string prompt = $"{name} (string with format {VehicleID.CodeFormat}): ";
-                string value = Utilities.AskForVehicleID(prompt, ui);
-                args.Add((name, $"\"{value.ToUpper()}\""));
+                var value = Utilities.AskForVehicleID(prompt, ui);
+                args.Add((name, $"\"{value}\""));
             }
             else if (type.Equals(typeof(bool)))
             {

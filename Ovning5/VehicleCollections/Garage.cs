@@ -56,6 +56,13 @@ internal class Garage<T> : IGarage<T> where T : class, IVehicle
         return true;
     }
 
+    public bool RemoveByID(string vehicleID)
+    {
+        if (!FindByID(vehicleID, out T? vehicle))
+            return false;
+        return Remove(vehicle);
+    }
+
     public string ListAll()
     {
         StringBuilder stringBuilder = new();

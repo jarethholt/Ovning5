@@ -23,6 +23,8 @@ internal class GarageHandler(int maxCapacity) : IGarage<IVehicle>
 
     public bool Remove(IVehicle vehicle) => _garage.Remove(vehicle);
 
+    public bool RemoveByID(string vehicleID) => _garage.RemoveByID(vehicleID);
+
     public bool TryAdd(IVehicle vehicle) => _garage.TryAdd(vehicle);
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

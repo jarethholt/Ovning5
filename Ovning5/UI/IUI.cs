@@ -2,10 +2,10 @@
 
 namespace Ovning5.UI;
 
-public class Options
+internal class Options
     : Dictionary<string, (string name, string description, Action action)> { }
 
-public interface IUI
+internal interface IUI
 {
     void WriteLine();
 
@@ -14,7 +14,7 @@ public interface IUI
     void Write(string prompt);
 
     string? ReadInput();
-
+    void Clear();
     void DisplayOptions(Options options)
     {
         int maxNameLength = options.Values.Select(value => value.name.Length).Max();
@@ -28,4 +28,5 @@ public interface IUI
         WriteLine(stringBuilder.ToString());
         WriteLine();
     }
+
 }

@@ -5,7 +5,7 @@ namespace Ovning5.UI;
 
 public delegate bool TryParse<T>(string input, [MaybeNullWhen(false)] out T result);
 
-public static class Utilities
+internal static class Utilities
 {
     public static void Loop(Action action, string againPrompt, IUI ui)
     {
@@ -129,6 +129,24 @@ public static class Utilities
             = $"Could not parse '{{0}}' as one of the valid options: {keyList}";
         string key = AskForBase<string>(prompt, tryParse, errorFormatter, ui);
         return options[key].action;
+    }
+
+    public static string AskForDictKey<TValue>(string prompt, Dictionary<string, TValue> dict, IUI ui)
+    {
+        bool tryParse(string readResult, out string key)
+        {
+            key = readResult;
+            return dict.ContainsKey(key);
+        }
+        string keyList = string.Join(", ", dict.Keys);
+        string errorFormatter = $"Could not parse '{{0}}' as one of the valid options: {keyList}";
+        return AskForBase<string>(prompt, tryParse, errorFormatter, ui);
+    }
+
+    public static TValue AskForDictValue<TValue>(string prompt, Dictionary<string,TValue> dict, IUI ui)
+    {
+        string key = AskForDictKey<TValue>(prompt, dict, ui);
+        return dict[key];
     }
 
     public static VehicleID AskForVehicleID(string prompt, IUI ui)
