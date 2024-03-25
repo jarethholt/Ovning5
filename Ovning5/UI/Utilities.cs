@@ -26,13 +26,13 @@ internal static class Utilities
         string? readResult;
         T result;
 
-        ui.Write(prompt);
         do
         {
+            ui.Write(prompt);
             readResult = ui.ReadInput();
             if (string.IsNullOrWhiteSpace(readResult))
             {
-                ui.WriteLine("Cannot use an empty input. Try again.");
+                ui.WriteLine("Cannot use an empty input.");
                 continue;
             }
 
@@ -65,7 +65,7 @@ internal static class Utilities
             else result = default;
             return success;
         }
-        string errorFormatter = "Could not parse '{0}' as [y]es or [n]o. Try again.";
+        string errorFormatter = "Could not parse '{0}' as [y]es or [n]o.";
         return AskForBase<bool>(prompt, tryParse, errorFormatter, ui);
     }
 
@@ -82,7 +82,7 @@ internal static class Utilities
 
     public static int AskForInt(string prompt, IUI ui)
     {
-        string errorFormatter = $"Could not parse '{{0}}' as an integer. Try again.";
+        string errorFormatter = $"Could not parse '{{0}}' as an integer.";
         return AskForBase<int>(prompt, int.TryParse, errorFormatter, ui);
     }
 
@@ -96,7 +96,7 @@ internal static class Utilities
             return (low <= result);
         }
         string errorFormatter
-            = $"Could not parse '{{0}}' as an integer greater than {low-1}. Try again.";
+            = $"Could not parse '{{0}}' as an integer greater than {low-1}.";
         return AskForBase<int>(prompt, tryParse, errorFormatter, ui);
     }
 
@@ -110,25 +110,40 @@ internal static class Utilities
             return (low <= result && result <= high);
         }
         string errorFormatter
-            = $"Could not parse '{{0}}' as an integer between {low} and {high}. Try again.";
+            = $"Could not parse '{{0}}' as an integer between {low} and {high}.";
         return AskForBase<int>(prompt, tryParse, errorFormatter, ui);
     }
 
     public static int AskForPositiveInt(string prompt, IUI ui)
         => AskForInt(prompt, 1, ui);
 
-    public static Action AskForOption(string prompt, Options options, IUI ui)
+    public static Action AskForOption(string prompt, Options options, IUI ui, bool startAtZero = true)
     {
-        bool tryParse(string readResult, out string key)
+        bool tryParse(string readResult, [MaybeNullWhen(false)] out Option option)
         {
-            key = readResult;
-            return options.ContainsKey(key);
+            option = default;
+            if (int.TryParse(readResult, out int index))
+            {
+                int i = startAtZero ? index : index - 1;
+                if (0 <= i && i < options.Count)
+                {
+                    option = options[index];
+                    return true;
+                }
+                else
+                    return false;
+            }
+            Option? result = options.Find(option => option.name.Equals(readResult, StringComparison.CurrentCultureIgnoreCase));
+            if (result is (null, null, null))
+                return false;
+            option = (Option)result;
+            return true;
         }
-        string keyList = string.Join(", ", options.Keys);
+
         string errorFormatter
-            = $"Could not parse '{{0}}' as one of the valid options: {keyList}";
-        string key = AskForBase<string>(prompt, tryParse, errorFormatter, ui);
-        return options[key].action;
+            = $"Could not parse '{{0}}' as one of the valid options.";
+        Option option = AskForBase<Option>(prompt, tryParse, errorFormatter, ui);
+        return option.action;
     }
 
     public static string AskForDictKey<TValue>(string prompt, Dictionary<string, TValue> dict, IUI ui)
@@ -153,11 +168,12 @@ internal static class Utilities
     {
         static bool tryParse(string readResult, out string vehicleID)
         {
-            vehicleID = readResult;
+            vehicleID = readResult.ToUpper();
             return VehicleID.Validate(vehicleID);
         }
         string errorFormatter
             = $"The input '{{0}}' must be a string of the form {VehicleID.CodeFormat}";
-        return new VehicleID(AskForBase<string>(prompt, tryParse, errorFormatter, ui));
+        return new VehicleID(
+            AskForBase<string>(prompt, tryParse, errorFormatter, ui));
     }
 }

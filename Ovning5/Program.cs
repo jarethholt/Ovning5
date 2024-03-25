@@ -1,10 +1,26 @@
-﻿using Ovning5.VehicleCollections;
+﻿using Ovning5.Controller;
+using Ovning5.VehicleCollections;
 using Ovning5.Vehicles;
 using System.Text.Json;
 
 namespace Ovning5;
 
 internal class Program
+{
+    static void Main(string[] args)
+    {
+        if (args.Length == 1 && args[0] == "test")
+        {
+            Sandbox.Test();
+            return;
+        }
+
+        Director director = new(new UI.ConsoleUI());
+        director.MainMenu();
+    }
+}
+
+internal class Sandbox
 {
     static readonly Vehicle[] _vehicles =
     [
@@ -15,7 +31,7 @@ internal class Program
         Airplane.Example(),
     ];
 
-    static void Main()
+    public static void Test()
     {
         VehicleIDExamples();
         VehicleExamples();
