@@ -74,14 +74,14 @@ internal abstract class VehicleFactory : IVehicleFactory
     public List<(string name, string value)> AskForParameters(IUI ui)
         => VehicleFactoryHelper.AskForParameters(VehicleTypeName, Parameters, ui);
 
-    public abstract IVehicle CreateVehicle(string json);
+    public abstract Vehicle CreateVehicle(string json);
 
-    public IVehicle BuildVehicle(IUI ui)
+    public Vehicle BuildVehicle(IUI ui)
     {
         var parameterValues = AskForParameters(ui);
         string json = VehicleFactoryHelper.CreateJsonString(parameterValues);
         return CreateVehicle(json);
     }
 
-    public static IVehicle Example() => throw new NotImplementedException();
+    public static Vehicle Example() => throw new NotImplementedException();
 }

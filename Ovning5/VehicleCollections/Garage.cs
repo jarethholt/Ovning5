@@ -93,4 +93,6 @@ internal class Garage<T> : IGarage<T> where T : class, IVehicle
         => (IEnumerator<T?>)_vehicles.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public static Garage<T> Example() => throw new NotImplementedException();
 }

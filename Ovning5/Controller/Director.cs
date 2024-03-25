@@ -94,7 +94,7 @@ internal class Director(IUI ui)
             return;
         }
         IVehicleFactory vehicleFactory = _vehiclePlant.ChooseVehicleFactory(_ui);
-        IVehicle vehicle = vehicleFactory.BuildVehicle(_ui);
+        Vehicle vehicle = vehicleFactory.BuildVehicle(_ui);
         if (!_currentGarage.TryAdd(vehicle))
             _ui.WriteLine(
                 "An error occurred while trying to add the vehicle to the garage");

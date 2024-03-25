@@ -11,7 +11,7 @@ internal record Boat(
     public override int NumberOfWheels { get; } = 0;
     public int LengthInFeet => (int)(LengthInMeters * _metersToFeet);
 
-    public static new IVehicle Example()
+    public static new Vehicle Example()
         => new Boat(new VehicleID("JKL012"), "White", 25, "Calculon's Pride");
 
     //public override string ToString() => $"{LengthInMeters}-m {Color} boat: {Name}";

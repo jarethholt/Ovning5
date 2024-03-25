@@ -11,7 +11,7 @@ internal record Car(
 {
     public override int NumberOfWheels { get; } = 4;
 
-    public static new IVehicle Example()
+    public static new Vehicle Example()
         => new Car(new VehicleID("ABC123"), "Beige", "Toyota", "Corolla", 2002, 1000);
 
     // public override string ToString() => $"{Color} {Year} {Make} {Model} car";

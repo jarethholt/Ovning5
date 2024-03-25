@@ -10,5 +10,5 @@ internal interface IVehicle
 
     bool Equals(object? obj);
     string ToString();
-    static abstract IVehicle Example();
+    static abstract Vehicle Example();
 }

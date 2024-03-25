@@ -8,7 +8,7 @@ using ParameterSpec = IEnumerable<(string name, Type type)>;
 internal interface IVehicleFactory
 {
     public ParameterSpec Parameters { get; }
-    public IVehicle CreateVehicle(string json);
-    public IVehicle BuildVehicle(IUI ui);
-    public static abstract IVehicle Example();
+    public Vehicle CreateVehicle(string json);
+    public Vehicle BuildVehicle(IUI ui);
+    public static abstract Vehicle Example();
 }

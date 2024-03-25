@@ -11,7 +11,7 @@ internal record Bus(
         get => IsSingleCabin ? 6 : 10;
     }
 
-    public static new IVehicle Example()
+    public static new Vehicle Example()
         => new Bus(new VehicleID("GHI789"), "Red", true);
 
     //public override string ToString()

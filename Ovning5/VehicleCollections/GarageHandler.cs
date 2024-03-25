@@ -28,4 +28,15 @@ internal class GarageHandler(int maxCapacity) : IGarage<Vehicle>
     public bool TryAdd(Vehicle vehicle) => _garage.TryAdd(vehicle);
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public static Garage<Vehicle> Example()
+    {
+        Garage<Vehicle> garage = new(10);
+        garage.TryAdd(Car.Example());
+        garage.TryAdd(Motorcycle.Example());
+        garage.TryAdd(Bus.Example());
+        garage.TryAdd(Boat.Example());
+        garage.TryAdd(Airplane.Example());
+        return garage;
+    }
 }

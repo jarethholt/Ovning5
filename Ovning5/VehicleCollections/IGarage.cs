@@ -16,4 +16,6 @@ internal interface IGarage<T> : IEnumerable<T?> where T : class, IVehicle
     bool Remove(T vehicle);
 
     bool TryAdd(T vehicle);
+
+    static abstract Garage<T> Example();
 }

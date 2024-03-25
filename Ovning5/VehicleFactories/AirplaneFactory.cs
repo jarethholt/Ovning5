@@ -16,10 +16,10 @@ internal class AirplaneFactory : VehicleFactory, IVehicleFactory
         ("PassengerCapacity", typeof(int))
     ];
 
-    public override IVehicle CreateVehicle(string json)
+    public override Vehicle CreateVehicle(string json)
         => JsonSerializer.Deserialize<Airplane>(json)
         ?? throw new ArgumentException(
             $"Could not deserialize this JSON as type {VehicleTypeName}: {json}");
 
-    public static new IVehicle Example() => Airplane.Example();
+    public static new Vehicle Example() => Airplane.Example();
 }

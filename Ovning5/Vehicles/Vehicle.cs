@@ -6,5 +6,5 @@ internal abstract record Vehicle(VehicleID VehicleID, string Color) : IVehicle
     public virtual int NumberOfWheels { get; }
     public virtual string Color { get; init; } = Color;
 
-    public static IVehicle Example() => throw new NotImplementedException();
+    public static Vehicle Example() => throw new NotImplementedException();
 }
