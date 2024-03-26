@@ -2,6 +2,8 @@
 using Ovning5.VehicleCollections;
 using Ovning5.VehicleFactories;
 using Ovning5.Vehicles;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace Ovning5.Controller;
 
@@ -42,6 +44,8 @@ internal class Director
                 "Add a vehicle to the current garage", AddVehicleToGarage),
             ("RemoveVehicleFromGarage",
                 "Remove a vehicle from the current garage", RemoveVehicleFromGarage),
+            ("FilterVehiclesInGarage", "Search the vehicles in the garage",
+                FilterVehiclesInGarage),
         ];
     }
 
@@ -71,11 +75,13 @@ internal class Director
         _ui.Clear();
         _ui.WriteLine("Choose a garage\n");
 
+        // List the garages
         _ui.WriteLine("The following garages are available:");
         foreach (var kvp in _garages)
             _ui.WriteLine($"  {kvp.Key}: {kvp.Value.MaxCapacity} spaces");
         _ui.WriteLine();
 
+        // Get the name of a garage
         _currentGarageName = Utilities.AskForDictKey(
             "Please enter a garage name: ", _garages, _ui);
         _currentGarage = _garages[_currentGarageName];
@@ -83,6 +89,7 @@ internal class Director
         _ = _ui.ReadInput();
     }
 
+    // Show all garages and their vehicle summaries
     public void ViewAllGarages()
     {
         _ui.Clear();
@@ -139,6 +146,7 @@ internal class Director
     public void AddNewGarage()
         => Utilities.Loop(AddNewGarage_Single, "\nAdd another garage (y/n)? ", _ui);
 
+    // Print out full vehicle properties for the current garage
     public void ViewSelectedGarage()
     {
         _ui.Clear();
@@ -165,6 +173,8 @@ internal class Director
                 "This garage has no space. Use RemoveVehicleFromGarage first.");
             return;
         }
+
+        // Choose a factory from _vehiclePlant to construct the new vehicle
         IVehicleFactory vehicleFactory = _vehiclePlant.ChooseVehicleFactory(_ui);
         Vehicle vehicle = vehicleFactory.BuildVehicle(
             _ui, vehicleIDs: _currentGarage.ListVehicleIDs());
@@ -191,9 +201,11 @@ internal class Director
             return;
         }
 
+        // Show possible vehicles to remove
         _ui.WriteLine("The garage currently has these vehicles:");
         _ui.WriteLine(_currentGarage.ListAll());
 
+        // Ask for the ID of the vehicle to remove
         VehicleID vehicleID = (VehicleID)Utilities.AskForVehicleID(
             "Please enter the ID of one of these vehicles: ", _ui)!;
         if (!_currentGarage.RemoveByID(vehicleID.Code))
@@ -208,4 +220,207 @@ internal class Director
     public void RemoveVehicleFromGarage()
         => Utilities.Loop(
             RemoveVehicleFromGarage_Single, "Remove another vehicle (y/n)? ", _ui);
+
+    private List<Vehicle> FilterVehiclesInGarage_Single(IEnumerable<Vehicle> vehicles)
+    {
+        _ui.Clear();
+        _ui.WriteLine("Filter the vehicles in the current garage\n");
+
+        if (!vehicles.Any())
+        {
+            _ui.WriteLine(
+                "The current vehicle list is empty; cannot filter any further.");
+            return vehicles.ToList();
+        }
+
+        // Display the current list
+        PrintVehicleList(vehicles);
+        _ui.WriteLine();
+
+        // Vehicles can be filtered by type or by property
+        _ui.WriteLine("Vehicles can either be filtered by type or property value.");
+        bool byType = Utilities.AskForYesNo("Filter by type (y/n)? ", _ui);
+        if (byType)
+            return FilterVehicles_ByType(vehicles);
+        else
+            return FilterVehicles_ByProp(vehicles);
+    }
+
+    // Filter vehicles by type (Car, Boat, etc.)
+    private List<Vehicle> FilterVehicles_ByType(IEnumerable<Vehicle> vehicles)
+    {
+        _ui.Clear();
+        string vehicleTypeName = _vehiclePlant.ChooseVehicleType(_ui);
+        return vehicles
+            .Where(vehicle => vehicle.GetType().Name == vehicleTypeName)
+            .ToList();
+    }
+
+    /* Filter vehicles by property
+     * That's what this function is supposed to do. Technically, it filters
+     * them by constructor parameter instead! This code was adapted from the
+     * construction code in VehicleFactory, which relies on the list of
+     * parameters written explicitly for each Vehicle type.
+     * 
+     * This means that, for example, it is not possible to filter vehicles
+     * based on the Property NumberOfWheels because that's not a constructor
+     * parameter for any vehicle (each type sets its own NumberOfWheels).
+     */
+    private List<Vehicle> FilterVehicles_ByProp(IEnumerable<Vehicle> vehicles)
+    {
+        _ui.Clear();
+
+        // Display all possible parameters
+        Dictionary<string, (Type type, List<string> appliesTo)> parameters
+            = _vehiclePlant.GetAllParameters();
+        _ui.WriteLine(
+            "These are the possible parameters and the "
+            + "Vehicle classes they apply to:");
+        foreach (var kvp in parameters)
+        {
+            string paramName = kvp.Key;
+            Type type = kvp.Value.type;
+            List<string> appliesTo = kvp.Value.appliesTo;
+            _ui.WriteLine(
+                $"- {paramName} ({type.Name}): {string.Join(", ", appliesTo)}");
+        }
+        _ui.WriteLine();
+
+        // Need a different logic for getting the value of each parameter's Type
+        string param = Utilities.AskForDictKey(
+            "Select a parameter: ", parameters, _ui);
+        Type paramType = parameters[param].type;
+        if (paramType.Equals(typeof(VehicleID)))
+        {
+            string prompt =
+                $"{param}: Enter a string with (case-insensitive) format "
+                + $"{VehicleID.CodeFormat}: ";
+            VehicleID value = (VehicleID)Utilities.AskForVehicleID(prompt, _ui)!;
+            return vehicles
+                .Where(vehicle => vehicle.VehicleID.Equals(value))
+                .ToList();
+        }
+        else if (paramType.Equals(typeof(bool)))
+        {
+            string prompt = $"{param}: Enter [y]es or [n]o: ";
+            bool value = Utilities.AskForYesNo(prompt, _ui);
+            return vehicles
+                .Where(vehicle => TryGetPropertyValue(vehicle, param, out bool result)
+                                  && (result == value))
+                .ToList();
+        }
+        else if (paramType.Equals(typeof(int)))
+        {
+            string prompt = $"{param}: Enter a positive integer: ";
+            int value = (int)Utilities.AskForPositiveInt(prompt, _ui)!;
+            return vehicles
+                .Where(vehicle => TryGetPropertyValue(vehicle, param, out int result)
+                                  && (result == value))
+                .ToList();
+        }
+        else if (paramType.Equals(typeof(string)))
+        {
+            string prompt = $"{param}: Enter a string: ";
+            string value = (string)Utilities.AskForString(prompt, _ui)!;
+            return vehicles
+                .Where(vehicle => TryGetPropertyValue(vehicle, param, out string? result)
+                                  && (value.Equals(result)))
+                .ToList();
+        }
+        else
+            throw new ArgumentException(
+                $"Parameter {param} has a type {paramType.Name} that was unhandled. "
+                + "Expected one of: VehicleID, bool, int, or string");
+    }
+
+    public void FilterVehiclesInGarage()
+    {
+        bool again;
+        // Start with a list of all vehicles in the garage
+        List<Vehicle> vehicles = _currentGarage.Where(
+            vehicle => vehicle is not null).ToList()!;
+
+        do
+        {
+            vehicles = FilterVehiclesInGarage_Single(vehicles);
+
+            _ui.WriteLine("\nCurrent vehicle list:");
+            PrintVehicleList(vehicles);
+            _ui.WriteLine();
+            if (vehicles.Count == 0)
+                again = false;
+            else
+                again = Utilities.AskForYesNo("Continue filtering (y/n)? ", _ui);
+        } while (again);
+        _ui.WriteLine();
+
+        // Display the current list
+        if (vehicles.Count == 0)
+        {
+            _ui.WriteLine("The final list of vehicles is empty.");
+        }
+        else
+        {
+            _ui.Clear();
+            _ui.WriteLine("Final filtered list of vehicles:\n");
+            PrintVehicleList(vehicles);
+        }
+        _ui.WriteLine();
+        _ui.WriteLine("Press enter to continue.");
+        _ = _ui.ReadInput();
+    }
+
+    // Helper function to print the current vehicle list while filtering
+    private void PrintVehicleList(IEnumerable<Vehicle> vehicles)
+    {
+        foreach (var vehicle in vehicles)
+            _ui.WriteLine(vehicle.ToString());
+    }
+
+    /* This code is based on the following:
+     * https://code-maze.com/csharp-get-a-value-of-a-property-by-using-its-name/
+     * I needed a way to ask *all* objects in a list of Vehicles about the value
+     * of a property given as a string. No Vehicle class has all of the properties
+     * so I needed a way to signify that.
+     * 
+     * With this function, a query to match the property `paramName`
+     * with the value `value` is written as
+     *     TryGetPropertyValue(vehicle, paramName, out T result)
+     *     && (result == value)
+     * If the `vehicle` doesn't have the parameter, TryGetPropertyValue is false
+     * and evaluation stops. If it does have the parameter and TryGetPropertyValue
+     * is true, then `result` is non-null and also has to match the requested
+     * `value`.
+     */
+    private static bool TryGetPropertyValue<TType, TObj>(
+        TObj obj,
+        string propertyName,
+        [MaybeNullWhen(false)] out TType? value)
+    {
+        value = default;
+
+        if (obj is null)
+            return false;
+
+        PropertyInfo? propertyInfo = typeof(TObj).GetProperty(propertyName);
+        if (propertyInfo is null)
+            return false;
+
+        object? propertyValue = propertyInfo.GetValue(obj);
+        /* Here the original code also checks whether the result value
+         * could legitimately be null. That doesn't apply to any of my
+         * cases but it seems safer to leave it in.
+         * NB: Nullable.GetUnderlyingType actually returns null if
+         * the type is *not* nullable. Go figure.
+         */
+        if (
+            propertyValue is null
+            && Nullable.GetUnderlyingType(typeof(TType)) is not null)
+            return true;
+        if (propertyValue is not TType typedValue)
+            return false;
+
+        value = typedValue;
+        return true;
+    }
 }

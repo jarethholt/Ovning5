@@ -145,7 +145,7 @@ internal class Garage<T> : IGarage<T> where T : class, IVehicle
     }
 
     public IEnumerator<T?> GetEnumerator()
-        => (IEnumerator<T?>)_vehicles.GetEnumerator();
+        => _vehicles.OfType<T?>().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
