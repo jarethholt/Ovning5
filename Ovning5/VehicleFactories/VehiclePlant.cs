@@ -1,10 +1,10 @@
 ﻿using Ovning5.UI;
-using Ovning5.Vehicles;
 
 namespace Ovning5.VehicleFactories;
 
 internal class VehiclePlant
 {
+    // Keep an instance of each VehicleFactory ready to create vehicles
     private readonly Dictionary<string, VehicleFactory> _vehicleFactories = new()
     {
         { "Airplane", new AirplaneFactory() },
@@ -14,6 +14,7 @@ internal class VehiclePlant
         { "Motorcycle", new MotorcycleFactory() },
     };
 
+    // Choose the right factory for the vehicle that needs to be made
     public IVehicleFactory ChooseVehicleFactory(IUI ui)
     {
         ui.WriteLine(

@@ -1,5 +1,4 @@
-﻿using Ovning5.UI;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -9,11 +8,13 @@ namespace Ovning5.Vehicles;
 
 internal readonly struct VehicleIDHelper
 {
+    // Character number ranges for A-Z and 0-9
     public const int LetterRangeStart = 65;
     public const int LetterRangeStop = 91;
     public const int NumberRangeStart = 48;
     public const int NumberRangeStop = 58;
 
+    // Check whether an integer is in either range
     public static bool IsInNumberRange(int value)
         => NumberRangeStart <= value && value < NumberRangeStop;
 
@@ -23,6 +24,7 @@ internal readonly struct VehicleIDHelper
     public static bool IsInRange(bool isAlpha, int value)
         => isAlpha ? IsInLetterRange(value) : IsInNumberRange(value);
 
+    // Generate a random character in one of the ranges
     public static char GenerateLetter(Random random)
         => (char)random.Next(LetterRangeStart, LetterRangeStop);
 
@@ -32,6 +34,8 @@ internal readonly struct VehicleIDHelper
     public static char GenerateCharacter(bool isAlpha, Random random)
         => isAlpha ? GenerateLetter(random) : GenerateNumber(random);
 
+    // Check whether a string matches the given code format
+    // given by isAlpha (true for A-Z, false for 0-9)
     public static bool MatchesFormat(string code, bool[] isAlpha)
     {
         int codeLength = isAlpha.Length;
@@ -48,9 +52,11 @@ internal readonly struct VehicleIDHelper
     }
 }
 
+// Register a JSON converter for automatic serialization
 [JsonConverter(typeof(VehicleIDJsonConverter))]
 internal readonly record struct VehicleID
 {
+    // VehicleID format: AAA111
     private static readonly bool[] _isAlpha
         = [true, true, true, false, false, false];
     public static readonly string CodeFormat
@@ -75,6 +81,7 @@ internal readonly record struct VehicleID
     public static bool Validate(string code)
         => VehicleIDHelper.MatchesFormat(code, _isAlpha);
 
+    // Generate a random VehicleID
     public static VehicleID GenerateID(Random random)
     {
         char[] codeAsChars = new char[CodeLength];
@@ -83,8 +90,24 @@ internal readonly record struct VehicleID
                 = VehicleIDHelper.GenerateCharacter(_isAlpha[i], random);
         return new VehicleID(new string(codeAsChars));
     }
+
+    // Generate a random VehicleID not present in a given list
+    public static VehicleID GenerateUniqueID(
+        Random random,
+        IEnumerable<VehicleID> vehicleIDs)
+    {
+        VehicleID vehicleID;
+        do
+        {
+            vehicleID = GenerateID(random);
+            if (!vehicleIDs.Contains(vehicleID))
+                break;
+        } while (true);
+        return vehicleID;
+    }
 }
 
+// Custom JSON converter to only serialize based on VehicleID.Code
 internal class VehicleIDJsonConverter : JsonConverter<VehicleID>
 {
     public override VehicleID Read(

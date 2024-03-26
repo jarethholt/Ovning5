@@ -10,7 +10,13 @@ internal record Airplane(
 ) : Vehicle(VehicleID, Color), IVehicle
 {
     public static new Vehicle Example()
-        => new Airplane(new VehicleID("MNO345"), "White", "Boeing", "747", "Passenger jet", 350);
+        => new Airplane(
+            new VehicleID("MNO345"),
+            "White",
+            "Boeing",
+            "747",
+            "Passenger jet",
+            350);
 
     //public override string ToString() => $"{Color} {Make} {Model}";
 }

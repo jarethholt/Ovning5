@@ -12,7 +12,13 @@ internal record Motorcycle(
     public override int NumberOfWheels { get; } = 2;
 
     public static new Vehicle Example()
-        => new Motorcycle(new VehicleID("DEF456"), "Black", "Kawasaki", "Ninja ZX", 2024, "Sportbike");
+        => new Motorcycle(
+            new VehicleID("DEF456"),
+            "Black",
+            "Kawasaki",
+            "Ninja ZX",
+            2024,
+            "Sportbike");
 
     //public override string ToString() => $"{Color} {Year} {Make} {Model}";
 }

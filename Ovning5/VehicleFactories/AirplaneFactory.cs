@@ -5,8 +5,8 @@ namespace Ovning5.VehicleFactories;
 
 internal class AirplaneFactory : VehicleFactory, IVehicleFactory
 {
-    protected override string VehicleTypeName => "Airplane";
-    protected override (string name, Type type)[] Parameters =>
+    public override string VehicleTypeName => "Airplane";
+    public override ParameterSpecs Parameters =>
     [
         ("VehicleID", typeof(VehicleID)),
         ("Color", typeof(string)),

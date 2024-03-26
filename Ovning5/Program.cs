@@ -9,12 +9,15 @@ internal class Program
 {
     static void Main(string[] args)
     {
+        // The sandbox below had methods I was using during development
+        // and might still want to run in the future
         if (args.Length == 1 && args[0] == "test")
         {
             Sandbox.Test();
             return;
         }
 
+        // All we need to do is create a Director and start up the Main Menu
         Director director = new(new UI.ConsoleUI());
         director.MainMenu();
     }
@@ -43,6 +46,7 @@ internal class Sandbox
 
     static void VehicleIDExamples()
     {
+        // Generate VehicleIDs, using a seed value for replicability
         Random random = new(12345);
         VehicleID[] vehicleIDs =
         [
@@ -53,6 +57,8 @@ internal class Sandbox
             new VehicleID("XYZ098"),
         ];
 
+        // Test JSON serialization and deserialization of VehicleID
+        // VehicleID uses a custom format to focus only on string VehicleID.Code
         Console.WriteLine("Some example registration codes:");
         foreach (VehicleID vehicleID in vehicleIDs)
         {
@@ -65,11 +71,13 @@ internal class Sandbox
                 if (vehicleID.Equals(test))
                     Console.WriteLine("Deserialization succeeded and was correct!");
                 else
-                    Console.WriteLine($"Deserialization succeeded but was incorrect: {test}");
+                    Console.WriteLine(
+                        $"Deserialization succeeded but was incorrect: {test}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Deserialization failed and produced the following: {ex.Message}");
+                Console.WriteLine(
+                    $"Deserialization failed and produced the following: {ex.Message}");
             }
         }
         Console.WriteLine("---");
@@ -78,6 +86,8 @@ internal class Sandbox
 
     static void VehicleExamples()
     {
+        // Test JSON serialization and deserialization on all Vehicle classes
+        // This is automatic since all concrete Vehicle classes are records
         Console.WriteLine("Some example vehicles:");
         foreach (var vehicle in _vehicles)
         {
@@ -101,6 +111,7 @@ internal class Sandbox
 
     private static void GarageExample()
     {
+        // Show that a garage can be created and not over-filled
         Garage<Vehicle> garage = new(4);
 
         for (int i = 0; i < _vehicles.Length; i++)
@@ -114,6 +125,7 @@ internal class Sandbox
         }
         Console.WriteLine(garage.ListAll());
 
+        // Try searching for vehicles by VehicleID
         string[] vehicleIDs = ["GHI789", "XXX000"];
         foreach (var vehicleID in vehicleIDs)
         {
@@ -128,12 +140,25 @@ internal class Sandbox
         Console.WriteLine();
     }
 
+    /* This method is what I was using to explore how I could use reflection
+     * to build up the VehicleFactory/Builder. Given a Type, I can get the
+     * constructors and parameters for those constructors; all its properties;
+     * and all its methods and its parameters.
+     * 
+     * The sticking point is that it's much more complicated to do this when
+     * given the *string* name of a type, like you would get from user input.
+     * I have to pass that to JsonSerializer.Deserialize as the generic type.
+     * I found this: https://stackoverflow.com/a/4667999
+     * but it proved equally hard to make sure that the object returned was
+     * also transformed into the correct type.
+     */
     static void ReflectionTest()
     {
         Type type = typeof(Car);
         Console.WriteLine($"Examining reflection properties of type {type}");
         Console.WriteLine();
 
+        // Get its constructor (there should only be one)
         var constructors = type.GetConstructors();
         if (constructors.Length != 1)
         {
@@ -141,11 +166,14 @@ internal class Sandbox
             return;
         }
         var constructorInfo = constructors[0];
+
+        // List all the parameters of the constructor
         var paramInfo = constructorInfo.GetParameters();
         Console.WriteLine("Parameters for the constructor:");
         foreach (var info in paramInfo)
             Console.WriteLine($"  {info.ParameterType.Name} {info.Name}");
 
+        // List all the properties of this Type and whether they have get or set
         var properties = type.GetProperties();
         Console.WriteLine("Properties of this type:");
         foreach (var prop in properties)
@@ -162,14 +190,17 @@ internal class Sandbox
             Console.WriteLine(desc);
         }
 
+        // List all the methods for this type
         var methods = type.GetMethods();
         Console.WriteLine("Available methods:");
         foreach (var method in methods)
         {
+            // Ignore get_/set_ for properties and op_ for Equals
             if (method.Name.StartsWith("get_")
                 || method.Name.StartsWith("set_")
                 || method.Name.StartsWith("op_"))
                 continue;
+            // Add the parameter/return names and types
             List<string> args = [];
             foreach (var param in method.GetParameters())
             {
@@ -188,7 +219,7 @@ internal class Sandbox
         string vehicleTypeName = "Airplane";
         Console.WriteLine($"Examining constructor parameters for {vehicleTypeName}");
         Type vehicleType = VehicleBuilder_orig.GetVehicleType(vehicleTypeName);
-        List<(string name, Type type)> paramList
+        ParameterSpecs paramList
             = VehicleBuilder_orig.GetConstructorParameters(vehicleType);
 
         foreach ((string name, Type type) in paramList)
