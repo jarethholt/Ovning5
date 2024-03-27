@@ -41,6 +41,8 @@ internal class Sandbox
         GarageExample();
         ReflectionTest();
         VehicleBuilder_orig.Test();
+        Console.WriteLine("---");
+        Console.WriteLine();
         SelectParamsTest();
     }
 
@@ -218,13 +220,19 @@ internal class Sandbox
     {
         string vehicleTypeName = "Airplane";
         Console.WriteLine($"Examining constructor parameters for {vehicleTypeName}");
-        Type vehicleType = VehicleBuilder_orig.GetVehicleType(vehicleTypeName);
         ParameterSpecs paramList
-            = VehicleBuilder_orig.GetConstructorParameters(vehicleType);
-
+            = VehicleBuilder_orig.VehicleConstructorParams[vehicleTypeName];
         foreach ((string name, Type type) in paramList)
         {
             Console.WriteLine($"  {type.Name} {name}");
         }
+
+        var vehicleType = Type.GetType("Ovning5.Vehicles.Airplane");
+        object[] args = [new VehicleID("ABC123"), "White", "Boeing", "747", "Passenger jet", 350];
+        IVehicle result = VehicleBuilder_orig.BuildVehicle(vehicleType!, args)!;
+        Console.WriteLine(result!.ToString());
+
+        Console.WriteLine("---");
+        Console.WriteLine();
     }
 }

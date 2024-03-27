@@ -1,6 +1,5 @@
 ﻿using Ovning5.UI;
 using System.Reflection;
-using System.Text.Json;
 
 namespace Ovning5.Vehicles;
 
@@ -27,15 +26,42 @@ namespace Ovning5.Vehicles;
  */
 internal static class VehicleBuilder_orig
 {
-    private static readonly Module _currModule = typeof(VehicleBuilder_orig).Module;
-    private static readonly Type[] _vehicleTypes
-        = _currModule.FindTypes(ConcreteVehicleFilter, null);
-    private static readonly string[] _vehicleTypeNames
-        = _vehicleTypes.Select(type => type.Name).ToArray();
+    private static readonly Type[] _vehicleTypes;
+    private static readonly string[] _vehicleTypeNames;
+    private static readonly Dictionary<string, ParameterSpecs>
+        _constructorParams = [];
+    private static readonly Dictionary<string, ParameterSpecs>
+        _properties = [];
 
     public static string[] AvailableVehicles { get => _vehicleTypeNames; }
+    public static Dictionary<string, ParameterSpecs> VehicleConstructorParams
+    {
+        get => _constructorParams;
+    }
+    public static Dictionary<string, ParameterSpecs> VehicleProperties
+    {
+        get => _properties;
+    }
 
-    public static Type AskForVehicleType(IUI ui)
+    static VehicleBuilder_orig()
+    {
+        var module = Assembly.GetExecutingAssembly().GetModules()[0];
+        _vehicleTypes = module.FindTypes(ConcreteVehicleFilter, null);
+        _vehicleTypeNames = _vehicleTypes.Select(type => type.Name).ToArray();
+        foreach (Type vehicleType in _vehicleTypes)
+        {
+            ParameterInfo[] parameters
+                = vehicleType.GetConstructors()[0].GetParameters();
+            _constructorParams[vehicleType.Name]
+                = parameters.Select(p => (p.Name!, p.ParameterType)).ToList();
+            PropertyInfo[] properties
+                = vehicleType.GetProperties();
+            _properties[vehicleType.Name]
+                = properties.Select(p => (p.Name, p.PropertyType)).ToList();
+        }
+    }
+
+    public static Type AskForVehicleTypeName(IUI ui)
     {
         ui.WriteLine("These are the available vehicle types to build:");
         for (int i = 0; i < AvailableVehicles.Length; i++)
@@ -50,21 +76,29 @@ internal static class VehicleBuilder_orig
     // Ask for values for all constructor parameters
     public static List<(string name, string value)> AskForConstructorParameters(
         Type vehicleType,
-        IUI ui)
+        IUI ui,
+        IEnumerable<VehicleID>? vehicleIDs = null)
     {
         ui.WriteLine("Please provide the necessary parameters for the vehicle.");
-        ParameterSpecs parameters = GetConstructorParameters(vehicleType);
+        ParameterSpecs parameters = VehicleConstructorParams[vehicleType.Name];
         List<(string name, string value)> args = [];
         foreach ((string name, Type type) in parameters)
         {
             if (type.Equals(typeof(VehicleID)))
             {
-                string prompt = $"{name} (string with format {VehicleID.CodeFormat}): ";
+                string prompt
+                    = $"{name} (string with format {VehicleID.CodeFormat}; "
+                    + "leave blank to generate random): ";
                 VehicleID? result = Utilities.AskForVehicleID(
                     prompt, ui, isEmptyOk: true);
                 VehicleID value;
                 if (result is null)
-                    value = VehicleID.GenerateID(new Random());
+                {
+                    if (vehicleIDs is null)
+                        value = VehicleID.GenerateID(new Random());
+                    else
+                        value = VehicleID.GenerateUniqueID(new Random(), vehicleIDs);
+                }
                 else
                     value = (VehicleID)result;
                 args.Add((name, $"\"{value}\""));
@@ -73,7 +107,8 @@ internal static class VehicleBuilder_orig
             {
                 string prompt = $"{name} ([y]es or [n]o): ";
                 bool value = Utilities.AskForYesNo(prompt, ui);
-                args.Add((name, value.ToString()));
+                int valueAsInt = value ? 1 : 0;
+                args.Add((name, valueAsInt.ToString()));
             }
             else if (type.Equals(typeof(int)))
             {
@@ -97,57 +132,75 @@ internal static class VehicleBuilder_orig
         return args;
     }
 
-    // Get the Vehicle System.Type from a string name
-    public static Type GetVehicleType(string vehicleTypeName)
+    public static object[] AskForConstructorParameters_native(
+        Type vehicleType,
+        IUI ui,
+        IEnumerable<VehicleID>? vehicleIDs = null)
     {
-        return _vehicleTypes.FirstOrDefault(type => type.Name == vehicleTypeName)
-               ?? throw new ArgumentOutOfRangeException(
-                   nameof(vehicleTypeName),
-                   $"Could not find {vehicleTypeName} among the known vehicle types: "
-                   + $"{string.Join(", ", AvailableVehicles)}");
-    }
-
-    // Get all the parameters of a constructor
-    public static ParameterSpecs GetConstructorParameters(Type vehicleType)
-    {
-        var constructors = vehicleType.GetConstructors();
-        if (constructors.Length != 1)
-            throw new Exception(
-                $"Expected 1 constructor for {vehicleType.Name}, "
-                + $"got {constructors.Length}");
-        var constructor = constructors[0];
-        var parameters = constructor.GetParameters();
-        return parameters.Select(param => (param.Name!, param.ParameterType)).ToList();
-    }
-
-    private static string CreateJsonString(IEnumerable<(string name, string value)> args)
-    {
-        string[] argGroups = new string[args.Count()];
-        for (int i = 0; i < args.Count(); i++)
+        ui.WriteLine("Please provide the necessary parameters for the vehicle.");
+        ParameterSpecs parameters = VehicleConstructorParams[vehicleType.Name];
+        object[] args = new object[parameters.Count];
+        for (int i = 0; i < parameters.Count; i++)
         {
-            (string name, string value) = args.ElementAt(i);
-            argGroups[i] = $"\"{name}\":{value}";
+            (string name, Type type) = parameters[i];
+            object value;
+            if (type.Equals(typeof(VehicleID)))
+            {
+                string prompt
+                    = $"{name} (string with format {VehicleID.CodeFormat}; "
+                    + "leave blank to generate random): ";
+                VehicleID? result = Utilities.AskForVehicleID(
+                    prompt, ui, isEmptyOk: true);
+                if (result is null)
+                {
+                    if (vehicleIDs is null)
+                        value = VehicleID.GenerateID(new Random());
+                    else
+                        value = VehicleID.GenerateUniqueID(new Random(), vehicleIDs);
+                }
+                else
+                    value = (VehicleID)result;
+            }
+            else if (type.Equals(typeof(bool)))
+            {
+                string prompt = $"{name} ([y]es or [n]o): ";
+                value = Utilities.AskForYesNo(prompt, ui);
+            }
+            else if (type.Equals(typeof(int)))
+            {
+                string prompt = $"{name} (positive int): ";
+                value = (int)Utilities.AskForPositiveInt(prompt, ui)!;
+            }
+            else if (type.Equals(typeof(string)))
+            {
+                string prompt = $"{name} (string): ";
+                value = (string)Utilities.AskForString(prompt, ui)!;
+            }
+            else
+            {
+                throw new ArgumentException(
+                    $"Parameter {name} has a type {type.Name} that was unhandled. "
+                    + "Expected one of: VehicleID, bool, int, or string");
+            }
+            args[i] = value;
         }
-        return "{" + string.Join(',', argGroups) + "}";
+        return args;
     }
 
-    // Can serialize and deserialize given the generic T
-    public static T ConstructFromArgs<T>(
-        IEnumerable<(string name, string value)> args) where T : class, IVehicle
+    public static IVehicle? BuildVehicle(Type vehicleType, object[] args)
+        => Activator.CreateInstance(vehicleType, args) as IVehicle;
+
+    public static IVehicle? ConstructVehicle(IUI ui, IEnumerable<VehicleID>? vehicleIDs = null)
     {
-        string json = CreateJsonString(args);
-        return JsonSerializer.Deserialize<T>(json)
-            ?? throw new ArgumentException(
-                "The given arguments did not produce a valid object");
+        Type vehicleType = AskForVehicleTypeName(ui);
+        object[] args = AskForConstructorParameters_native(vehicleType, ui, vehicleIDs: vehicleIDs);
+        return BuildVehicle(vehicleType, args);
     }
 
     // Get constructor parameters for all Vehicle classes
     public static void Test()
     {
-        Type[] vehicleTypes = _currModule.FindTypes(ConcreteVehicleFilter,  null)
-            ?? throw new InvalidFilterCriteriaException(
-                "Could not find concrete vehicle types");
-        foreach (Type vehicleType in vehicleTypes)
+        foreach (Type vehicleType in _vehicleTypes)
         {
             Console.WriteLine($"Vehicle: {vehicleType.Name}");
             ConstructorInfo[] constructors = vehicleType.GetConstructors();
@@ -162,6 +215,12 @@ internal static class VehicleBuilder_orig
             foreach (ParameterInfo parameter in parameters)
             {
                 Console.WriteLine($"  {parameter.ParameterType.Name} {parameter.Name}");
+            }
+            PropertyInfo[] properties = vehicleType.GetProperties();
+            Console.WriteLine("Vehicle properties:");
+            foreach (PropertyInfo property in properties)
+            {
+                Console.WriteLine($"  {property.PropertyType.Name} {property.Name}");
             }
         }
     }
